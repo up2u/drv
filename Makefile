@@ -1,6 +1,5 @@
-obj-m := nothing.o
+obj-m := nothing.o hello.o
 
-#KERNEL_PATH := /lib/modules/2.6.35-23-generic/build
 KERNEL_PATH := /usr/src/linux-headers-2.6.35-23-generic
 CURRENT_PATH := $(shell pwd)
 
