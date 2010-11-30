@@ -1,4 +1,4 @@
-obj-m := memory.o
+obj-m := parlelport.o
 
 #KERNEL_PATH := /usr/src/linux-headers-2.6.35-23-generic
 KERNEL_PATH := /usr/src/kernels/2.6.23.1-42.fc8-i686
