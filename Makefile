@@ -7,4 +7,4 @@ CURRENT_PATH := $(shell pwd)
 all:
 	make -C $(KERNEL_PATH)  M=$(CURRENT_PATH) modules
 clean:
-	rm -f *.o *.mod *.ko
+	rm -fr *.o *.mod *.ko .*.cmd  *.mod.c modules.order .tmp_versions/ Module.symvers
