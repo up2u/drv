@@ -1,7 +1,7 @@
-obj-m := parlelport.o
+obj-m := hello_args.o
 
-#KERNEL_PATH := /usr/src/linux-headers-2.6.35-23-generic
-KERNEL_PATH := /usr/src/kernels/2.6.23.1-42.fc8-i686
+KERNEL_PATH := /usr/src/linux-headers-2.6.35-23-generic
+#KERNEL_PATH := /usr/src/kernels/2.6.23.1-42.fc8-i686
 CURRENT_PATH := $(shell pwd)
 
 all:
