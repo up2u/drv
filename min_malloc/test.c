@@ -4,41 +4,29 @@
 
 int main()
 {
-	struct dlink_list dll;
-	struct dlink_list dll1;
-	struct dlink_list dll2;
-	struct dlink_list dll3;
-	struct dlink_list dll4;
+	struct gslist head_sgl;
+	struct gslist *gptr = NULL;
+	struct block *ptr = NULL;
+	struct block blk[5];
+	int i = 0;
 
-	int i=0;
-	struct dlink_list *ptr = NULL;
+	head_sgl.next = NULL;
 
-	init_list(&dll);
-
-	ins_list(&dll,&dll1);
-	ins_list(&dll,&dll2);
-	ins_list(&dll,&dll3);
-	ins_list(&dll,&dll4);
+	for(i=0; i<5; i++)
+	{
+		blk[i].flag = 2*i;
+		blk[i].size = 100+i;
+		gslist_add_head(&head_sgl, &(blk[i].list));
+	}
 	
-	printf("add:%08x,%08x,%08x,%08x\n", &dll1, &dll2, &dll3, &dll4);
-	for(ptr = dll.next; ptr != &dll; ptr=ptr->next)
+	gptr = head_sgl.next;
+	for(i=0; i<5; i++)
 	{
-		printf("add = %08x\n", ptr);
+		ptr = (struct block *)(container_of(struct block, list, (size_t)gptr));
+		printf("flag=%d, size=%d\n",ptr->flag, ptr->size);
+		gptr = gptr->next;		
 	}
 
-	del_list(&dll1);
-
-	for(ptr = dll.next; ptr != &dll; ptr=ptr->next)
-	{
-		printf("add = %08x\n", ptr);
-	}
-		
-	del_list(&dll3);
-
-	for(ptr = dll.next; ptr != &dll; ptr=ptr->next)
-	{
-		printf("add = %08x\n", ptr);
-	}
 	return 0;
 }
 
