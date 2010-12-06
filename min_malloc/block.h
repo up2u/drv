@@ -24,7 +24,7 @@ struct block
 	struct   block *free_prev;
 	struct   block *malloc_next;
 	struct   block *malloc_prev;		
-	struct 	 gslist list;
+	struct 	 gdlist list;
 };
 
 #endif

@@ -39,7 +39,6 @@ struct dlink_list
 	(node)->prev->next = (node)->next; \
 	(node)->next = (node)->prev->next
 
-
 /**************************************
  * 
  * singly link list.  
@@ -50,15 +49,31 @@ struct dlink_list
 	(node)->next = (head)->next; \
 	(head)->next = (node)
 
+
+/**************************************
+ * 
+ * general double circular link list
+ *
+ **************************************/
+
+/* insert to tail of list */
+#define ins_gdlist_tail(head, node) ins_dlist_tail(head, node)
+
+/* insert to head of list */
+#define ins_gdlist_head(head, node) ins_dlist_head(head, node)
+
 /**************************************
  * 
  * general singly link list
  *
  **************************************/
 
-#define ins_gslist_head(head, node) \
-	(node)->next = (head)->next; \
-	(head)->next = (node)
+/* insert to head of list */
+#define ins_gslist_head(head, node) ins_slist_head(head, node)
+
+/* get first of general list */
+#define get_glist_head(head) \
+	(head)->next
 	
 #endif
 

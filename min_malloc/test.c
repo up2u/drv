@@ -4,22 +4,23 @@
 
 int main()
 {
-	struct gslist head_sgl;
-	struct gslist *gptr = NULL;
+	struct gdlist head_gdlist;
+	struct gdlist *gptr = NULL;
 	struct block *ptr = NULL;
 	struct block blk[5];
 	int i = 0;
 
-	head_sgl.next = NULL;
+	init_dlist(&head_gdlist);
 
 	for(i=0; i<5; i++)
 	{
 		blk[i].flag = 2*i;
 		blk[i].size = 100+i;
-		ins_gslist_head(&head_sgl, &(blk[i].list));
+		ins_gdlist_tail(&head_gdlist, &(blk[i].list));
 	}
 	
-	gptr = head_sgl.next;
+	gptr = get_glist_head(&head_gdlist);
+
 	for(i=0; i<5; i++)
 	{
 		ptr = (struct block *)(container_of(struct block, list, (size_t)gptr));
