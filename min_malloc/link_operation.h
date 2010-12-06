@@ -16,18 +16,18 @@ struct dlink_list
  *
  **************************************/
 
-#define init_list(node) \
+#define init_dlist(node) \
 	(node)->next = (node); \
     (node)->prev = (node)
 
 /* inser to the tail of head */
-#define ins_list(head,node) \
+#define ins_dlist_tail(head,node) \
 	(head)->prev->next = (node); \
 	(node)->prev = (head)->prev; \
 	(node)->next = head; \
 	(head)->prev = (node)
 
-#define del_list(node) \
+#define del_dlist(node) \
 	(node)->prev->next = (node)->next; \
 	(node)->next = (node)->prev->next
 
@@ -38,7 +38,7 @@ struct dlink_list
  *
  **************************************/
 
-#define ins_list_sgl(head, node) \
+#define ins_slist_head(head, node) \
 	(node)->next = (head)->next; \
 	(head)->next = (node)
 
@@ -48,7 +48,7 @@ struct dlink_list
  *
  **************************************/
 
-#define gslist_add_head(head, node) \
+#define ins_gslist_head(head, node) \
 	(node)->next = (head)->next; \
 	(head)->next = (node)
 	
