@@ -1,6 +1,8 @@
 #ifndef	 _BLOCK_H_
 #define  _BLOCK_H_
 
+#include <string.h>
+
 typedef	unsigned int uint;
 
 struct gdlist
@@ -23,6 +25,8 @@ struct block
 	struct   gdlist list_free;
 	struct 	 gdlist list_malloc;
 };
+
+#define size_block sizeof(struct block)
 
 #endif
 
