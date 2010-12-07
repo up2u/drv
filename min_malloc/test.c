@@ -25,7 +25,7 @@ int main()
 	{
 		ptr = (struct block *)(container_of(struct block, list, (size_t)gptr));
 		printf("flag=%d, size=%d\n",ptr->flag, ptr->size);
-		gptr = gptr->next;		
+		gptr = get_glist_next(gptr);		
 	}
 
 	return 0;

@@ -75,5 +75,9 @@ struct dlink_list
 #define get_glist_head(head) \
 	(head)->next
 	
+/* get next of general list */
+#define get_glist_next(node) \
+	(node)->next
+
 #endif
 
