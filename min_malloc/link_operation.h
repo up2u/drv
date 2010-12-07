@@ -23,17 +23,17 @@ struct dlink_list
 
 /* inser to the tail of list */
 #define ins_dlist_tail(head,node) \
-	(head)->prev->next = (node); \
 	(node)->prev = (head)->prev; \
+	(node)->prev->next = (node); \
 	(node)->next = head; \
-	(head)->prev = (node)
+	(node)->next->prev = (node)
 
 /* insert to the head of list */
 #define ins_dlist_head(head, node) \
-	(head)->next->prev = (node); \
 	(node)->next = (head)->next; \
-	(head)->next = (node); \
-	(node)->prev = (head)
+	(node)->next->prev = (node); \
+	(node)->prev = (head); \
+	(node)->prev->next = (node)
 
 #define del_dlist(node) \
 	(node)->prev->next = (node)->next; \

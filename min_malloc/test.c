@@ -16,7 +16,7 @@ int main()
 	{
 		blk[i].flag = 2*i;
 		blk[i].size = 100+i;
-		ins_gdlist_tail(&head_gdlist, &(blk[i].list));
+		ins_gdlist_head(&head_gdlist, &(blk[i].list));
 	}
 	
 	gptr = get_glist_head(&head_gdlist);
