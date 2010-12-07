@@ -20,11 +20,8 @@ struct block
 	uint	 size;
 	struct   block *next;
 	struct   block *prev;
-	struct   block *free_next;
-	struct   block *free_prev;
-	struct   block *malloc_next;
-	struct   block *malloc_prev;		
-	struct 	 gdlist list;
+	struct   gdlist list_free;
+	struct 	 gdlist list_malloc;
 };
 
 #endif
