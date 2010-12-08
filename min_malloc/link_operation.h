@@ -21,19 +21,25 @@ struct dlink_list
 	(node)->next = (node); \
     (node)->prev = (node)
 
-/* inser to the tail of list */
-#define ins_dlist_tail(head,node) \
-	(node)->prev = (head)->prev; \
-	(node)->prev->next = (node); \
-	(node)->next = head; \
-	(node)->next->prev = (node)
+/* insert node2 after node1 */
+#define ins_dlist_after(node1, node2) \
+	(node2)->next = (node1)->next; \
+	(node2)->next->prev = (node2); \
+	(node2)->prev = (node1); \
+	(node2)->prev->next = (node2)
+	
+/* insert node2 before node1 */
+#define ins_dlist_before(node1, node2) \
+	(node2)->prev = (node1)->prev; \
+	(node2)->prev->next = (node2); \
+	(node2)->next = (node1); \
+	(node2)->next->prev = (node2)
+	
+/* insert to the tail of list */
+#define ins_dlist_tail(head,node) ins_dlist_before(head, node)
 
 /* insert to the head of list */
-#define ins_dlist_head(head, node) \
-	(node)->next = (head)->next; \
-	(node)->next->prev = (node); \
-	(node)->prev = (head); \
-	(node)->prev->next = (node)
+#define ins_dlist_head(head, node) ins_dlist_after(head, node)
 
 #define del_dlist(node) \
 	(node)->prev->next = (node)->next; \
@@ -62,6 +68,9 @@ struct dlink_list
 /* insert to head of list */
 #define ins_gdlist_head(head, node) ins_dlist_head(head, node)
 
+/* delete from general list */
+#define del_gdlist(node) del_dlist(node)
+
 /**************************************
  * 
  * general singly link list
@@ -78,6 +87,10 @@ struct dlink_list
 /* get next of general list */
 #define get_glist_next(node) \
 	(node)->next
+
+/* get prev of general list*/
+#define get_glist_prev(node) \
+	(node)->prev
 
 #endif
 

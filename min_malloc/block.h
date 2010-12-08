@@ -24,7 +24,7 @@ struct block
 	unsigned char flag;
 	uint	 size;
 	struct   block *next;
-	struct   block *prev;
+	struct 	 block *prev;
 	struct   gdlist list_free;
 	struct 	 gdlist list_malloc;
 };
