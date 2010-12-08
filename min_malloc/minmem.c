@@ -38,7 +38,11 @@ void init_hash_tab(struct gdlist *tab, int size)
 *-----------------------------------------------------------------------------*/
 int key_hash_free(size_t size)
 {
-	return size/HASH_FREE;
+	int key = size/HASH_FREE;
+	if(key > HASH_FREE-1){
+		key = HASH_FREE-1;	
+	}
+	return key ;
 }
 
 /*-----------------------------------------------------------------------------
@@ -129,19 +133,37 @@ void *search_hash_free(size_t size)
 {
 	int key = key_hash_free(size);
 	struct gdlist *pgdlist = get_glist_next(&(hash_free[key]));
-	struct block *pblk = (struct block *)container_of(struct block, list_free, (size_t)pgdlist);
-	size_t size_tmp = pblk->size;
-	while(pgdlist != &hash_free[key] && size_tmp < size ){
-		pgdlist = get_glist_next(pgdlist);
+	struct block *pblk = NULL;
+	size_t size_tmp = 0;
+	if(pgdlist != &hash_free[key]){
 		pblk = (struct block *)container_of(struct block, list_free, (size_t)pgdlist);
-		size_tmp = pblk->size;
+	    size_tmp = pblk->size;
 	}
-	if(pgdlist == &hash_free[key]){/*current key size not available,next key*/
-			;
-	}else{
-		/*handle near by block, and hash table, link list.it has variety stitution*/
-		handle_block_free(pblk,size);
-		return (void *)((size_t)pblk + size_block);			
+
+	while(key < HASH_FREE){
+		while(pgdlist != &hash_free[key] && size_tmp < size ){
+			pgdlist = get_glist_next(pgdlist);
+			pblk = (struct block *)container_of(struct block, list_free, (size_t)pgdlist);
+			size_tmp = pblk->size;
+		}
+		if(pgdlist == &hash_free[key]){/*current key size not available,next key*/
+			key++;
+			pgdlist = get_glist_next(&(hash_free[key]));
+			if(pgdlist != &hash_free[key]){
+				pblk = (struct block *)container_of(struct block, list_free, (size_t)pgdlist);
+				size_tmp = pblk->size;
+			}
+			continue;
+		}else{
+			/*handle near by block, and hash table, link list.it has variety stitution*/
+			handle_block_free(pblk,size);
+			return (void *)((size_t)pblk + size_block);			
+		}
+
+	}
+	if(key == HASH_FREE){
+		printf("search the all hash table.no block available\n");
+		return NULL;
 	}
 }
 
@@ -196,7 +218,7 @@ void * init_divblock(void *blk, size_t size, size_t maxsize)
 		pblock2->flag = FREE;
 		pblock2->size = maxsize-2*size_block-size;
 		init_new_block(pblock2);
-		ins_dlist_tail(pblock1, pblock2); /*to head list*/	
+		ins_dlist_after(pblock1, pblock2); /*to head list*/	
 		ins_hash_malloc(pblock1); /*to malloc list*/
 		ins_hash_free(pblock2); /*to free list*/
 
@@ -245,17 +267,48 @@ void *min_malloc(size_t size)
 	if(large_block == NULL){
 		return init_malloc(size);
 	}else{/*ourself mmu*/
-		return malloc(5);	
+		return search_hash_free(size);
 	}
 }
+
+
+/*-----------------------------------------------------------------------------
+* Function: 
+* Purpose: 
+*         
+* Parameters:
+*         
+* Return: 
+*-----------------------------------------------------------------------------*/
+void debug(void *chr)
+{
+	printf("DEBUG: the char is %c\n", *(char *)chr);
+}
+
 
 int main()
 {
 	printf("test mmu\n");
 	void *ptr = min_malloc(5);
-	printf("free\n");
+	char *chr = NULL;
 	void *p2 = (void *)((size_t)ptr - size_block);
+	int i = 0;
+	int size=0;
+	for(i=0; i<10; i++){
+		printf("allocate %d\n", i+1);
+		chr =(char *)min_malloc(10+i);
+		if(chr == NULL){
+			printf("min_malloc error\n");
+			goto free;
+		}
+		*chr = 'A'+i;
+		debug((void *)chr);
+	}
+
+	printf("after allocate .\n");
+free:
 	free(p2);	
+	printf("after free\n");
 	return 0;
 }
 

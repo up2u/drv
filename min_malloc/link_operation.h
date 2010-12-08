@@ -43,7 +43,7 @@ struct dlink_list
 
 #define del_dlist(node) \
 	(node)->prev->next = (node)->next; \
-	(node)->next = (node)->prev->next
+	(node)->next->prev = (node)->prev
 
 /**************************************
  * 
