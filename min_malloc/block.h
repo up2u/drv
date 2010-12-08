@@ -5,6 +5,9 @@
 
 typedef	unsigned int uint;
 
+#define FREE 1
+#define USED 0
+
 struct gdlist
 {
 	struct gdlist *next;
