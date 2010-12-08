@@ -181,6 +181,7 @@ void * init_divblock(void *blk, size_t size, size_t maxsize)
 	pblock1 = (struct block *)blk;
 	pblock1->size = size;
 	pblock1->flag = USED;
+	init_new_block(pblock1);
 	ins_dlist_tail(&head, pblock1);
 
 	if((size+2*size_block) >= maxsize){ /*only one block*/
@@ -194,7 +195,8 @@ void * init_divblock(void *blk, size_t size, size_t maxsize)
 		pblock2 = (struct block *)((size_t)blk+size_block+size);
 		pblock2->flag = FREE;
 		pblock2->size = maxsize-2*size_block-size;
-		ins_dlist_tail(&head, pblock2); /*to head list*/	
+		init_new_block(pblock2);
+		ins_dlist_tail(pblock1, pblock2); /*to head list*/	
 		ins_hash_malloc(pblock1); /*to malloc list*/
 		ins_hash_free(pblock2); /*to free list*/
 
