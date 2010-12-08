@@ -10,7 +10,7 @@
 void * large_block = NULL;
 struct gdlist hash_free[HASH_FREE];
 struct gdlist hash_malloc[HASH_MALLOC];
-struct block head;
+struct block  head;
 
 /*-----------------------------------------------------------------------------
 * Function: 
@@ -36,14 +36,113 @@ void init_hash_tab(struct gdlist *tab, int size)
 *         
 * Return: 
 *-----------------------------------------------------------------------------*/
+int key_hash_free(size_t size)
+{
+	return size/HASH_FREE;
+}
+
+/*-----------------------------------------------------------------------------
+* Function: 
+* Purpose: 
+*         
+* Parameters:
+*         
+* Return: 
+*-----------------------------------------------------------------------------*/
+int key_hash_malloc(size_t addr)
+{
+	return addr%HASH_MALLOC;	
+}
+
+/*-----------------------------------------------------------------------------
+* Function: 
+* Purpose: 
+*         
+* Parameters:
+*         
+* Return: 
+*-----------------------------------------------------------------------------*/
 void ins_hash_free(struct block *blk)
 {
 	int key = 0;
-	key = (blk->size)/HASH_FREE;
+	key = key_hash_free(blk->size);
 	if(key > HASH_FREE-1){
 		key = HASH_FREE-1;	
 	}
-	ins_gdlist_tail(&(hash_free[key], &(blk->list_free)));
+	ins_gdlist_tail(&(hash_free[key]), &(blk->list_free));
+}
+
+
+/*-----------------------------------------------------------------------------
+* Function: 
+* Purpose: 
+*         
+* Parameters:
+*         
+* Return: 
+*-----------------------------------------------------------------------------*/
+void handle_block_free(struct block *block1, size_t size)
+{
+	struct block *block2 = NULL;
+	int key_free = 0;
+	int key_malloc = 0;
+
+	if(block1->size > size+size_block){/*create one more*/
+		/*init block2*/
+		block2 = (struct block *)((size_t)block1 + size_block + size);
+		block2->flag = FREE;
+		block2->size = block1->size - size-2*size_block;
+		/*resize the block1*/
+		block1->size = size;
+		block1->flag = USED;
+		
+		/*block1, block2*/
+		ins_dlist_after(block1,block2);/*insert the new block*/
+
+		/*block1*/
+		del_gdlist(&(block1->list_free)); /*del from free list*/
+		key_malloc = key_hash_malloc((size_t)block1);
+		ins_gdlist_tail(&hash_malloc[key_malloc],&(block1->list_malloc));
+
+		/*block2*/
+		key_free = key_hash_free(block2->size);
+		ins_gdlist_tail(&(hash_free[key_free]),&(block2->list_free));
+		
+	}else{/*only one block*/
+		/*del from free hash, set USED*/
+		block1->flag = USED;	
+		del_gdlist(&(block1->list_free));
+		key_malloc = key_hash_malloc((size_t)block1);
+		ins_gdlist_tail(&hash_malloc[key_malloc],&(block1->list_malloc));
+	}
+}
+
+/*-----------------------------------------------------------------------------
+* Function: 
+* Purpose: 
+*         
+* Parameters:
+*         
+* Return: 
+*-----------------------------------------------------------------------------*/
+void *search_hash_free(size_t size)
+{
+	int key = key_hash_free(size);
+	struct gdlist *pgdlist = get_glist_next(&(hash_free[key]));
+	struct block *pblk = (struct block *)container_of(struct block, list_free, (size_t)pgdlist);
+	size_t size_tmp = pblk->size;
+	while(pgdlist != &hash_free[key] && size_tmp < size ){
+		pgdlist = get_glist_next(pgdlist);
+		pblk = (struct block *)container_of(struct block, list_free, (size_t)pgdlist);
+		size_tmp = pblk->size;
+	}
+	if(pgdlist == &hash_free[key]){/*current key size not available,next key*/
+			;
+	}else{
+		/*handle near by block, and hash table, link list.it has variety stitution*/
+		handle_block_free(pblk,size);
+		return (void *)((size_t)pblk + size_block);			
+	}
 }
 
 /*-----------------------------------------------------------------------------
@@ -56,9 +155,9 @@ void ins_hash_free(struct block *blk)
 *-----------------------------------------------------------------------------*/
 void ins_hash_malloc(struct block *blk)
 {
-	void *key = NULL;
-	key = (size_t)blk/HASH_MALLOC;		
-	
+	int key = 0;
+	key = key_hash_malloc((size_t)blk);
+	ins_gdlist_tail(&(hash_malloc[key]),&(blk->list_malloc));	
 }
 
 /*-----------------------------------------------------------------------------
@@ -69,33 +168,38 @@ void ins_hash_malloc(struct block *blk)
 *         
 * Return: 
 *-----------------------------------------------------------------------------*/
-void init_divblock(void *blk, size_t size, size_t maxsize)
+void * init_divblock(void *blk, size_t size, size_t maxsize)
 {
-	size_t i = 0;	
 	struct block *pblock1 = NULL;
 	struct block *pblock2 = NULL;
 	void *pmem = NULL;
 
+	/*init head*/
 	init_dlist(&head);
-	pmem =  (void *)((size_t)large_block + size_block);
-	pblock1 = (struct block *)large_block;
+
+	pmem =  (void *)((size_t)blk+ size_block);
+	pblock1 = (struct block *)blk;
 	pblock1->size = size;
 	pblock1->flag = USED;
 	ins_dlist_tail(&head, pblock1);
-	ins_hash_malloc(pblock1);	
 
-	if((size+2*size_block) >= maxsize){
+	if((size+2*size_block) >= maxsize){ /*only one block*/
 		printf("it can only allocate one\n");
-		pblock->size = maxsize-size_block;
-	}else{
+		pblock1->size = maxsize-size_block;
+		ins_hash_malloc(pblock1);
+
+		return pmem;
+	}else{ /*now two block*/
 		printf("it can allocate one more\n");
 		pblock2 = (struct block *)((size_t)blk+size_block+size);
 		pblock2->flag = FREE;
 		pblock2->size = maxsize-2*size_block-size;
-		ins_dlist_tail(&head, pblock2);
-		ins_hash_free(pblock2);
+		ins_dlist_tail(&head, pblock2); /*to head list*/	
+		ins_hash_malloc(pblock1); /*to malloc list*/
+		ins_hash_free(pblock2); /*to free list*/
+
+		return pmem;
 	}
-	return pmem;
 }
 
 /*-----------------------------init_malloc()-----------------------------------
@@ -112,13 +216,16 @@ void * init_malloc(size_t size)
 			printf("the size is larger than MAXSIZE, implement in next phase.\n");
 			return NULL;
 		}else{
+			printf("init hash table.\n");
+			init_hash_tab(hash_free, HASH_FREE);
+			init_hash_tab(hash_malloc, HASH_MALLOC);
 			printf("it's first alloc, use system malloc()\n");	
 			large_block = malloc(MAXSIZE);
 			if(large_block == NULL){
 				printf("system malloc error\n");
 				return NULL;	
 			}else{
-				init_divblock(large_block, size, MAXSIZE);
+				return init_divblock(large_block, size, MAXSIZE);
 			}
 		}
 }
@@ -133,13 +240,20 @@ void * init_malloc(size_t size)
 *-----------------------------------------------------------------------------*/
 void *min_malloc(size_t size)
 {	
-	void *pblock = NULL;
-	void *pmem;
-
 	if(large_block == NULL){
 		return init_malloc(size);
-	}else{
-		
+	}else{/*ourself mmu*/
+		return malloc(5);	
 	}
+}
+
+int main()
+{
+	printf("test mmu\n");
+	void *ptr = min_malloc(5);
+	printf("free\n");
+	void *p2 = (void *)((size_t)ptr - size_block);
+	free(p2);	
+	return 0;
 }
 
