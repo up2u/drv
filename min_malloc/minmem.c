@@ -13,13 +13,14 @@ struct gdlist hash_free[HASH_FREE];
 struct gdlist hash_used[HASH_USED];
 struct block  head;
 
-/*-----------------------------------------------------------------------------
-* Function: 
-* Purpose: 
+/*-----------------------------init_hash_tab()---------------------------------
+* Function: init_hash_tab() 
+* Purpose: init hash table 
 *         
 * Parameters:
-*         
-* Return: 
+*		tab (IN) -- address of table
+*       size (IN) -- table size  
+* Return: void
 *-----------------------------------------------------------------------------*/
 void init_hash_tab(struct gdlist *tab, int size)
 {
@@ -29,13 +30,13 @@ void init_hash_tab(struct gdlist *tab, int size)
 	}
 }
 
-/*-----------------------------------------------------------------------------
-* Function: 
-* Purpose: 
+/*------------------------------key_hash_free()--------------------------------
+* Function: key_hash_free()
+* Purpose: generate key for free hash table
 *         
 * Parameters:
-*         
-* Return: 
+*         size(IN) -- the size you want to allocate
+* Return: int
 *-----------------------------------------------------------------------------*/
 int key_hash_free(size_t size)
 {
@@ -46,89 +47,92 @@ int key_hash_free(size_t size)
 	return key ;
 }
 
-/*-----------------------------------------------------------------------------
-* Function: 
-* Purpose: 
+/*-----------------------------key_hash_used()---------------------------------
+* Function: key_hash_used()
+* Purpose: generate key for used hash table
 *         
 * Parameters:
-*         
-* Return: 
+*         addr(IN) -- address of the memory you want to free
+* Return: int
 *-----------------------------------------------------------------------------*/
 int key_hash_used(size_t addr)
 {
 	return addr%HASH_USED;	
 }
 
-/*-----------------------------------------------------------------------------
-* Function: 
-* Purpose: 
+/*-----------------------------ins_hash_free()---------------------------------
+* Function: ins_hash_free()
+* Purpose: insert the free block to the free hash table for quick search
 *         
 * Parameters:
-*         
-* Return: 
+*         pblock(IN) -- the pointer of a free block
+* Return: void
 *-----------------------------------------------------------------------------*/
-void ins_hash_free(struct block *blk)
+void ins_hash_free(struct block *pblock)
 {
 	int key = 0;
-	key = key_hash_free(blk->size);
+	key = key_hash_free(pblock->size);
 	if(key > HASH_FREE-1){
 		key = HASH_FREE-1;	
 	}
-	ins_gdlist_tail(&(hash_free[key]), &(blk->list_free));
+	ins_gdlist_tail(&(hash_free[key]), &(pblock->list_free));
 }
 
 
-/*-----------------------------------------------------------------------------
-* Function: 
-* Purpose: 
-*         
+/*------------------------------handle_block_free()----------------------------
+* Function: handle_block_free()
+* Purpose: when allocate a free block,need handle the near by block,if its to 
+*         small, merge the left small block to current allocate free block,else 
+*		  it big enough for one more block, then create one block more, and do 
+*		  corresponding list operation.
 * Parameters:
-*         
-* Return: 
+*         pblock (IN) -- avail block searched from free hash table
+*		  size (IN) -- size you want to allocate
+* Return: void
 *-----------------------------------------------------------------------------*/
-void handle_block_free(struct block *block1, size_t size)
+void handle_block_free(struct block *pblock, size_t size)
 {
-	struct block *block2 = NULL;
+	struct block *pblock1 = NULL;
 	int key_free = 0;
 	int key_used = 0;
 
-	if(block1->size > size+size_block){/*create one more*/
-		/*init block2*/
-		block2 = (struct block *)((size_t)block1 + size_block + size);
-		block2->flag = FREE;
-		block2->size = block1->size - size-size_block;
-		/*resize the block1*/
-		block1->size = size;
-		block1->flag = USED;
+	if(pblock->size > size+size_block){/*create one more*/
+		/*init pblock1*/
+		pblock1 = (struct block *)((size_t)pblock + size_block + size);
+		pblock1->flag = FREE;
+		pblock1->size = pblock->size - size-size_block;
+		/*resize the pblock*/
+		pblock->size = size;
+		pblock->flag = USED;
 		
-		/*block1, block2*/
-		ins_dlist_after(block1,block2);/*insert the new block*/
+		/*pblock, pblock1*/
+		ins_dlist_after(pblock,pblock1);/*insert the new pblock*/
 
-		/*block1*/
-		del_gdlist(&(block1->list_free)); /*del from free list*/
-		key_used = key_hash_used((size_t)block1);
-		ins_gdlist_tail(&hash_used[key_used],&(block1->list_used));
+		/*pblock*/
+		del_gdlist(&(pblock->list_free)); /*del from free list*/
+		key_used = key_hash_used((size_t)pblock);
+		ins_gdlist_tail(&hash_used[key_used],&(pblock->list_used));
 
-		/*block2*/
-		key_free = key_hash_free(block2->size);
-		ins_gdlist_tail(&(hash_free[key_free]),&(block2->list_free));
+		/*pblock1*/
+		key_free = key_hash_free(pblock1->size);
+		ins_gdlist_tail(&(hash_free[key_free]),&(pblock1->list_free));
 		
-	}else{/*only one block*/
+	}else{/*only one pblock*/
 		/*del from free hash, set USED*/
-		block1->flag = USED;	
-		del_gdlist(&(block1->list_free));
-		key_used = key_hash_used((size_t)block1);
-		ins_gdlist_tail(&hash_used[key_used],&(block1->list_used));
+		pblock->flag = USED;	
+		del_gdlist(&(pblock->list_free));
+		key_used = key_hash_used((size_t)pblock);
+		ins_gdlist_tail(&hash_used[key_used],&(pblock->list_used));
 	}
 }
 
-/*-----------------------------------------------------------------------------
-* Function: 
-* Purpose: 
+/*------------------------------search_hash_free()-----------------------------
+* Function: search_hash_free()
+* Purpose: search an available free block from free hash table
 *         
 * Parameters:
-*         
-* Return: 
+*         size(IN) -- size you want to allocate
+* Return: void point
 *-----------------------------------------------------------------------------*/
 void *search_hash_free(size_t size)
 {
@@ -168,13 +172,13 @@ void *search_hash_free(size_t size)
 	}
 }
 
-/*-----------------------------------------------------------------------------
-* Function: 
-* Purpose: 
+/*-------------------------------ins_hash_used()-------------------------------
+* Function: ins_hash_used()
+* Purpose: insert the used block to used hash table
 *         
 * Parameters:
-*         
-* Return: 
+*         pblock(IN) -- pointer of used block
+* Return: void
 *-----------------------------------------------------------------------------*/
 void ins_hash_used(struct block *pblock)
 {
@@ -183,13 +187,15 @@ void ins_hash_used(struct block *pblock)
 	ins_gdlist_tail(&(hash_used[key]),&(pblock->list_used));	
 }
 
-/*-----------------------------------------------------------------------------
-* Function: 
-* Purpose: 
-*         
+/*-------------------------------init_divblock()-------------------------------
+* Function: init_divblock()
+* Purpose: when first allocate from system malloc(),need handle the large block
+*          do some list operation
 * Parameters:
-*         
-* Return: 
+*         pblock(IN) -- large block from system malloc()
+*		  size(IN) -- size you first time you want to allocate
+*		  maxsize(IN) -- large block size you will allocate from system malloc()
+* Return: void point
 *-----------------------------------------------------------------------------*/
 void * init_divblock(void *pblock, size_t size, size_t maxsize)
 {
@@ -272,13 +278,14 @@ void *min_malloc(size_t size)
 	}
 }
 
-/*-----------------------------------------------------------------------------
-* Function: 
-* Purpose: 
+/*--------------------------------min_free()-----------------------------------
+* Function: min_free()
+* Purpose: free the small block,merge near by clock, and do list operation, 
 *         
 * Parameters:
-*         
-* Return: 
+*         ptr(IN) -- small memory address,it locate after the control struct, 
+*			     not block point address
+* Return: void
 *-----------------------------------------------------------------------------*/
 void min_free(void *ptr)
 {
