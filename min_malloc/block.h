@@ -26,7 +26,7 @@ struct block
 	struct   block *next;
 	struct 	 block *prev;
 	struct   gdlist list_free;
-	struct 	 gdlist list_malloc;
+	struct 	 gdlist list_used;
 };
 
 #define size_block sizeof(struct block)
@@ -36,8 +36,8 @@ struct block
 	(block)->prev = NULL; \
 	(block)->list_free.next = NULL; \
 	(block)->list_free.prev = NULL; \
-	(block)->list_malloc.next = NULL; \
-	(block)->list_malloc.prev = NULL
+	(block)->list_used.next = NULL; \
+	(block)->list_used.prev = NULL
 
 #endif
 

@@ -6,11 +6,11 @@
 
 #define MAXSIZE 10000
 #define HASH_FREE 50
-#define HASH_MALLOC 50
+#define HASH_USED 50
 
 void * large_block = NULL;
 struct gdlist hash_free[HASH_FREE];
-struct gdlist hash_malloc[HASH_MALLOC];
+struct gdlist hash_used[HASH_USED];
 struct block  head;
 
 /*-----------------------------------------------------------------------------
@@ -54,9 +54,9 @@ int key_hash_free(size_t size)
 *         
 * Return: 
 *-----------------------------------------------------------------------------*/
-int key_hash_malloc(size_t addr)
+int key_hash_used(size_t addr)
 {
-	return addr%HASH_MALLOC;	
+	return addr%HASH_USED;	
 }
 
 /*-----------------------------------------------------------------------------
@@ -90,7 +90,7 @@ void handle_block_free(struct block *block1, size_t size)
 {
 	struct block *block2 = NULL;
 	int key_free = 0;
-	int key_malloc = 0;
+	int key_used = 0;
 
 	if(block1->size > size+size_block){/*create one more*/
 		/*init block2*/
@@ -106,8 +106,8 @@ void handle_block_free(struct block *block1, size_t size)
 
 		/*block1*/
 		del_gdlist(&(block1->list_free)); /*del from free list*/
-		key_malloc = key_hash_malloc((size_t)block1);
-		ins_gdlist_tail(&hash_malloc[key_malloc],&(block1->list_malloc));
+		key_used = key_hash_used((size_t)block1);
+		ins_gdlist_tail(&hash_used[key_used],&(block1->list_used));
 
 		/*block2*/
 		key_free = key_hash_free(block2->size);
@@ -117,8 +117,8 @@ void handle_block_free(struct block *block1, size_t size)
 		/*del from free hash, set USED*/
 		block1->flag = USED;	
 		del_gdlist(&(block1->list_free));
-		key_malloc = key_hash_malloc((size_t)block1);
-		ins_gdlist_tail(&hash_malloc[key_malloc],&(block1->list_malloc));
+		key_used = key_hash_used((size_t)block1);
+		ins_gdlist_tail(&hash_used[key_used],&(block1->list_used));
 	}
 }
 
@@ -134,31 +134,31 @@ void *search_hash_free(size_t size)
 {
 	int key = key_hash_free(size);
 	struct gdlist *pgdlist = get_glist_next(&(hash_free[key]));
-	struct block *pblk = NULL;
+	struct block *pblock = NULL;
 	size_t size_tmp = 0;
 	if(pgdlist != &hash_free[key]){
-		pblk = (struct block *)container_of(struct block, list_free, (size_t)pgdlist);
-	    size_tmp = pblk->size;
+		pblock = (struct block *)container_of(struct block, list_free, (size_t)pgdlist);
+	    size_tmp = pblock->size;
 	}
 
 	while(key < HASH_FREE){
 		while(pgdlist != &hash_free[key] && size_tmp < size ){
 			pgdlist = get_glist_next(pgdlist);
-			pblk = (struct block *)container_of(struct block, list_free, (size_t)pgdlist);
-			size_tmp = pblk->size;
+			pblock = (struct block *)container_of(struct block, list_free, (size_t)pgdlist);
+			size_tmp = pblock->size;
 		}
 		if(pgdlist == &hash_free[key]){/*current key size not available,next key*/
 			key++;
 			pgdlist = get_glist_next(&(hash_free[key]));
 			if(pgdlist != &hash_free[key]){
-				pblk = (struct block *)container_of(struct block, list_free, (size_t)pgdlist);
-				size_tmp = pblk->size;
+				pblock = (struct block *)container_of(struct block, list_free, (size_t)pgdlist);
+				size_tmp = pblock->size;
 			}
 			continue;
 		}else{
 			/*handle near by block, and hash table, link list.it has variety stitution*/
-			handle_block_free(pblk,size);
-			return (void *)((size_t)pblk + size_block);			
+			handle_block_free(pblock,size);
+			return (void *)((size_t)pblock + size_block);			
 		}
 
 	}
@@ -176,11 +176,11 @@ void *search_hash_free(size_t size)
 *         
 * Return: 
 *-----------------------------------------------------------------------------*/
-void ins_hash_malloc(struct block *blk)
+void ins_hash_used(struct block *pblock)
 {
 	int key = 0;
-	key = key_hash_malloc((size_t)blk);
-	ins_gdlist_tail(&(hash_malloc[key]),&(blk->list_malloc));	
+	key = key_hash_used((size_t)pblock);
+	ins_gdlist_tail(&(hash_used[key]),&(pblock->list_used));	
 }
 
 /*-----------------------------------------------------------------------------
@@ -191,7 +191,7 @@ void ins_hash_malloc(struct block *blk)
 *         
 * Return: 
 *-----------------------------------------------------------------------------*/
-void * init_divblock(void *blk, size_t size, size_t maxsize)
+void * init_divblock(void *pblock, size_t size, size_t maxsize)
 {
 	struct block *pblock1 = NULL;
 	struct block *pblock2 = NULL;
@@ -200,8 +200,8 @@ void * init_divblock(void *blk, size_t size, size_t maxsize)
 	/*init head*/
 	init_dlist(&head);
 
-	pmem =  (void *)((size_t)blk+ size_block);
-	pblock1 = (struct block *)blk;
+	pmem =  (void *)((size_t)pblock+ size_block);
+	pblock1 = (struct block *)pblock;
 	pblock1->size = size;
 	pblock1->flag = USED;
 	init_new_block(pblock1);
@@ -210,17 +210,17 @@ void * init_divblock(void *blk, size_t size, size_t maxsize)
 	if((size+2*size_block) >= maxsize){ /*only one block*/
 		printf("it can only allocate one\n");
 		pblock1->size = maxsize-size_block;
-		ins_hash_malloc(pblock1);
+		ins_hash_used(pblock1);
 
 		return pmem;
 	}else{ /*now two block*/
 		printf("it can allocate one more\n");
-		pblock2 = (struct block *)((size_t)blk+size_block+size);
+		pblock2 = (struct block *)((size_t)pblock+size_block+size);
 		pblock2->flag = FREE;
 		pblock2->size = maxsize-2*size_block-size;
 		init_new_block(pblock2);
 		ins_dlist_after(pblock1, pblock2); /*to head list*/	
-		ins_hash_malloc(pblock1); /*to malloc list*/
+		ins_hash_used(pblock1); /*to malloc list*/
 		ins_hash_free(pblock2); /*to free list*/
 
 		return pmem;
@@ -243,7 +243,7 @@ void * init_malloc(size_t size)
 		}else{
 			printf("init hash table.\n");
 			init_hash_tab(hash_free, HASH_FREE);
-			init_hash_tab(hash_malloc, HASH_MALLOC);
+			init_hash_tab(hash_used, HASH_USED);
 			printf("it's first alloc, use system malloc()\n");	
 			large_block = malloc(MAXSIZE);
 			if(large_block == NULL){
@@ -282,19 +282,19 @@ void *min_malloc(size_t size)
 *-----------------------------------------------------------------------------*/
 void min_free(void *ptr)
 {
-	struct block *block1 = (struct block *)(size_t)(ptr-size_block);
-	struct block *pprev = block1->prev;
-	struct block *pnext = block1->next;
+	struct block *pblock = (struct block *)(size_t)(ptr-size_block);
+	struct block *pprev = pblock->prev;
+	struct block *pnext = pblock->next;
 	int key_free = 0;
 	unsigned char cases = 0;
 	if(pprev->flag == FREE && pnext->flag == FREE){
 		cases = 0;
-		pprev->size += block1->size + pnext->size + 2*size_block;
+		pprev->size += pblock->size + pnext->size + 2*size_block;
 		/*del from head list*/
-		del_dlist(block1);
+		del_dlist(pblock);
 		del_dlist(pnext);
 		/*del hash list*/
-		del_gdlist(&(block1->list_malloc));
+		del_gdlist(&(pblock->list_used));
 		del_gdlist(&(pprev->list_free));
 		del_dlist(&(pnext->list_free));
 		/*ins hash list*/
@@ -303,34 +303,34 @@ void min_free(void *ptr)
 
 	}else if(pprev->flag == FREE && pnext->flag == USED){
 		cases = 1;
-		pprev->size += block1->size + size_block;
+		pprev->size += pblock->size + size_block;
 		/*del from head list*/
-		del_dlist(block1);
+		del_dlist(pblock);
 		/*del hash */
-		del_gdlist(&(block1->list_malloc));
+		del_gdlist(&(pblock->list_used));
 		del_gdlist(&(pprev->list_free));
 		/*ins hash*/
 		key_free = key_hash_free(pprev->size);
 		ins_gdlist_tail(&(hash_free[key_free]),&(pprev->list_free));
 	}else if(pprev->flag == USED && pnext->flag == FREE){
 		cases = 2;
-		block1->size += pnext->size + size_block;
+		pblock->size += pnext->size + size_block;
 		/*del from head list*/
 		del_dlist(pnext);
 		/*del from hash list*/
-		del_gdlist(&(block1->list_malloc));
+		del_gdlist(&(pblock->list_used));
 		del_gdlist(&(pnext->list_free));
 		/*ins hash list*/
 		key_free = key_hash_free(pprev->size);
-		ins_gdlist_tail(&(hash_free[key_free]),&(block1->list_free));
+		ins_gdlist_tail(&(hash_free[key_free]),&(pblock->list_free));
 	}else{
 		cases = 3;	
-		block1->flag = FREE;
+		pblock->flag = FREE;
 		/*del hash list*/
-		del_gdlist(&(block1->list_malloc));
+		del_gdlist(&(pblock->list_used));
 		/*ins hash list*/
-		key_free = key_hash_free(block1->size);
-		ins_gdlist_tail(&(hash_free[key_free]),&(block1->list_free));
+		key_free = key_hash_free(pblock->size);
+		ins_gdlist_tail(&(hash_free[key_free]),&(pblock->list_free));
 	}
 }
 
@@ -347,7 +347,7 @@ void debug(void *chr)
 	struct block *pnext = head.next;
 	struct block *pprev = head.prev;
 	int i = 0;
-	struct gdlist *phash_malloc = get_glist_next(&(hash_malloc[0]));
+	struct gdlist *phash_used = get_glist_next(&(hash_used[0]));
 	struct gdlist *phash_free = get_glist_next(&(hash_free[0]));
 	struct block *pblock = NULL;
 //	printf("DEBUG: the char is %c\n", *(char *)chr);
@@ -361,14 +361,14 @@ void debug(void *chr)
 	}
 /*output the hash table*/
 	i = 0;
-	while(i < HASH_MALLOC){
-		while(phash_malloc != &(hash_malloc[i])){
-			pblock = (struct block *)container_of(struct block, list_malloc, (size_t)phash_malloc);
-			printf("hash_malloc i=%d,flag=%d,size=%d\n",i, pblock->flag, pblock->size);
-			phash_malloc = get_glist_next(phash_malloc);
+	while(i < HASH_USED){
+		while(phash_used != &(hash_used[i])){
+			pblock = (struct block *)container_of(struct block, list_used, (size_t)phash_used);
+			printf("hash_used i=%d,flag=%d,size=%d\n",i, pblock->flag, pblock->size);
+			phash_used = get_glist_next(phash_used);
 		}
 		i++;
-		phash_malloc = get_glist_next(&(hash_malloc[i]));
+		phash_used = get_glist_next(&(hash_used[i]));
 	}
 	i = 0;
 	while(i < HASH_FREE){
