@@ -284,6 +284,10 @@ void debug(void *chr)
 {
 	struct block *pnext = head.next;
 	struct block *pprev = head.prev;
+	int i = 0;
+	struct gdlist *phash_malloc = get_glist_next(&(hash_malloc[0]));
+	struct gdlist *phash_free = get_glist_next(&(hash_free[0]));
+	struct block *pblock = NULL;
 //	printf("DEBUG: the char is %c\n", *(char *)chr);
 //	while(pnext != &head){
 	while(pprev != &head){
@@ -292,6 +296,27 @@ void debug(void *chr)
 		printf("      %d,         %d   \n\n", pprev->flag, pprev->size);
 //		pnext = pnext->next;
 		pprev = pprev->prev;
+	}
+/*output the hash table*/
+	i = 0;
+	while(i < HASH_MALLOC){
+		while(phash_malloc != &(hash_malloc[i])){
+			pblock = (struct block *)container_of(struct block, list_malloc, (size_t)phash_malloc);
+			printf("hash_malloc i=%d,flag=%d,size=%d\n",i, pblock->flag, pblock->size);
+			phash_malloc = get_glist_next(phash_malloc);
+		}
+		i++;
+		phash_malloc = get_glist_next(&(hash_malloc[i]));
+	}
+	i = 0;
+	while(i < HASH_FREE){
+		while(phash_free != &(hash_free[i])){
+			pblock = (struct block *)container_of(struct block, list_free, (size_t)phash_free);
+			printf("hash_free i=%d,flag=%d,size=%d\n",i, pblock->flag, pblock->size);
+			phash_free = get_glist_next(phash_free);
+		}
+		i++;
+		phash_free = get_glist_next(&(hash_free[i]));
 	}
 }
 
