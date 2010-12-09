@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "link_operation.h"
 #include "block.h"
 
@@ -271,6 +272,67 @@ void *min_malloc(size_t size)
 	}
 }
 
+/*-----------------------------------------------------------------------------
+* Function: 
+* Purpose: 
+*         
+* Parameters:
+*         
+* Return: 
+*-----------------------------------------------------------------------------*/
+void min_free(void *ptr)
+{
+	struct block *block1 = (struct block *)(size_t)(ptr-size_block);
+	struct block *pprev = block1->prev;
+	struct block *pnext = block1->next;
+	int key_free = 0;
+	unsigned char cases = 0;
+	if(pprev->flag == FREE && pnext->flag == FREE){
+		cases = 0;
+		pprev->size += block1->size + pnext->size + 2*size_block;
+		/*del from head list*/
+		del_dlist(block1);
+		del_dlist(pnext);
+		/*del hash list*/
+		del_gdlist(&(block1->list_malloc));
+		del_gdlist(&(pprev->list_free));
+		del_dlist(&(pnext->list_free));
+		/*ins hash list*/
+		key_free = key_hash_free(pprev->size);
+		ins_gdlist_tail(&(hash_free[key_free]),&(pprev->list_free));
+
+	}else if(pprev->flag == FREE && pnext->flag == USED){
+		cases = 1;
+		pprev->size += block1->size + size_block;
+		/*del from head list*/
+		del_dlist(block1);
+		/*del hash */
+		del_gdlist(&(block1->list_malloc));
+		del_gdlist(&(pprev->list_free));
+		/*ins hash*/
+		key_free = key_hash_free(pprev->size);
+		ins_gdlist_tail(&(hash_free[key_free]),&(pprev->list_free));
+	}else if(pprev->flag == USED && pnext->flag == FREE){
+		cases = 2;
+		block1->size += pnext->size + size_block;
+		/*del from head list*/
+		del_dlist(pnext);
+		/*del from hash list*/
+		del_gdlist(&(block1->list_malloc));
+		del_gdlist(&(pnext->list_free));
+		/*ins hash list*/
+		key_free = key_hash_free(pprev->size);
+		ins_gdlist_tail(&(hash_free[key_free]),&(block1->list_free));
+	}else{
+		cases = 3;	
+		block1->flag = FREE;
+		/*del hash list*/
+		del_gdlist(&(block1->list_malloc));
+		/*ins hash list*/
+		key_free = key_hash_free(block1->size);
+		ins_gdlist_tail(&(hash_free[key_free]),&(block1->list_free));
+	}
+}
 
 /*-----------------------------------------------------------------------------
 * Function: 
@@ -329,16 +391,48 @@ int main()
 	void *p2 = (void *)((size_t)ptr - size_block);
 	int i = 0;
 	int size=0;
-	for(i=0; i<2; i++){
+	void *pf0 = NULL;
+	void *pf1 = NULL;
+	void *pf2 = NULL;
+	void *pf3 = NULL;
+	void *pf4 = NULL;
+	void *pf5 = NULL;
+	void *pf6 = NULL;
+
+	for(i=0; i<7; i++){
 		printf("allocate %d\n", i+1);
-		chr =(char *)min_malloc(10+i);
+		chr =(char *)min_malloc(10+pow(i,3));
 		if(chr == NULL){
 			printf("min_malloc error\n");
 			goto free;
 		}
+		if(i == 0){
+			pf0 = (void *)chr;	
+		}
+		if(i == 1){
+			pf1 = (void *)chr;	
+		}
+		if(i == 2){
+			pf2 = (void *)chr;	
+		}
+		if(i == 3){
+			pf3 = (void *)chr;	
+		}
+		if(i == 4){
+			pf4 = (void *)chr;	
+		}
+		if(i == 5){
+			pf5 = (void *)chr;	
+		}
+		if(i == 6){
+			pf6 = (void *)chr;	
+		}
 		*chr = 'A'+i;
 	}
-		debug((void *)chr);
+
+	min_free(pf2);
+	min_free(pf3);
+	debug((void *)chr);
 
 	printf("after allocate .\n");
 free:
