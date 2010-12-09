@@ -95,7 +95,7 @@ void handle_block_free(struct block *block1, size_t size)
 		/*init block2*/
 		block2 = (struct block *)((size_t)block1 + size_block + size);
 		block2->flag = FREE;
-		block2->size = block1->size - size-2*size_block;
+		block2->size = block1->size - size-size_block;
 		/*resize the block1*/
 		block1->size = size;
 		block1->flag = USED;
@@ -282,7 +282,17 @@ void *min_malloc(size_t size)
 *-----------------------------------------------------------------------------*/
 void debug(void *chr)
 {
-	printf("DEBUG: the char is %c\n", *(char *)chr);
+	struct block *pnext = head.next;
+	struct block *pprev = head.prev;
+//	printf("DEBUG: the char is %c\n", *(char *)chr);
+//	while(pnext != &head){
+	while(pprev != &head){
+		printf("block.flag, block.size,\n");	
+//		printf("      %d,         %d   \n\n", pnext->flag, pnext->size);
+		printf("      %d,         %d   \n\n", pprev->flag, pprev->size);
+//		pnext = pnext->next;
+		pprev = pprev->prev;
+	}
 }
 
 
@@ -294,7 +304,7 @@ int main()
 	void *p2 = (void *)((size_t)ptr - size_block);
 	int i = 0;
 	int size=0;
-	for(i=0; i<10; i++){
+	for(i=0; i<2; i++){
 		printf("allocate %d\n", i+1);
 		chr =(char *)min_malloc(10+i);
 		if(chr == NULL){
@@ -302,8 +312,8 @@ int main()
 			goto free;
 		}
 		*chr = 'A'+i;
-		debug((void *)chr);
 	}
+		debug((void *)chr);
 
 	printf("after allocate .\n");
 free:
