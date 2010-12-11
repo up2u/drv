@@ -67,6 +67,42 @@ bool pop(sqstack *s, selemtype *e)
 	return true;
 }
 
+
+/*------------------------------( )--------------------------------
+* Function: 
+* Purpose: 
+*         
+* Parameters:
+*         
+* Return: 
+*-----------------------------------------------------------------------------*/
+bool print(sqstack *s)
+{
+	selemtype *ptr = s->top;/*save the top point*/
+	if(s->top == s->base){
+		return false;
+	}else{
+		while(s->top != s->base)
+			printf("traverse stack: get element is %d\n", *(--s->top));
+
+		s->top = ptr;/*restore*/
+		return true;
+	}
+}
+
+/*------------------------------( )--------------------------------
+* Function: 
+* Purpose: 
+*         
+* Parameters:
+*         
+* Return: 
+*-----------------------------------------------------------------------------*/
+bool traverse(sqstack *s, bool (* visit)(sqstack *pstack))
+{
+	return visit(s);
+}
+
 int main()
 {
 	sqstack stack;
@@ -75,12 +111,15 @@ int main()
 	int id = 0;
 
 	init_stack(&stack);
-	while(id++ < 4){/*after loop id=3 ! */
+	while(id++ < 4){/*after loop id=5 ! */
 		if(!push(&stack, id)){
 			printf("push error.\n");
 		}
 	}
-	
+
+	/*traverse the stack*/
+	traverse(&stack, print);
+
 //	while(id-- > 0){/*after loop id=-1,so the loop time is 1 time more than below loop.
 //					or can use (id-- > 1) */
 	while(id-- > 1){
@@ -90,7 +129,7 @@ int main()
 			printf("pop element is %d\n", j);
 		}
 	}
-
+	
 	return 0;
 }
 
