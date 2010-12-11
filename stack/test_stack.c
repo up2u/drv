@@ -83,7 +83,7 @@ bool print(sqstack *s)
 		return false;
 	}else{
 		while(s->top != s->base)
-			printf("traverse stack: get element is %d\n", *(--s->top));
+			printf("traverse stack: get element is %lld\n", *(--s->top));
 
 		s->top = ptr;/*restore*/
 		return true;
@@ -112,7 +112,7 @@ int main()
 
 	init_stack(&stack);
 	while(id++ < 4){/*after loop id=5 ! */
-		if(!push(&stack, id)){
+		if(!push(&stack, i++)){
 			printf("push error.\n");
 		}
 	}
@@ -126,7 +126,7 @@ int main()
 		if(!pop(&stack, &j)){
 			printf("pop error.\n");
 		}else{
-			printf("pop element is %d\n", j);
+			printf("pop element is %lld\n", j);
 		}
 	}
 	
