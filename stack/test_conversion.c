@@ -24,7 +24,11 @@ void conversion(int elem, int to)
 		elem = elem/to;
 	}
 	while(pop(&head, &oe)){
-		printf("%d",oe);
+		if(oe>=10){
+			printf("%c",oe+0x37);
+		}else{
+			printf("%d",oe);
+		}
 	}
 	putchar('\n');
 }
@@ -32,7 +36,7 @@ void conversion(int elem, int to)
 int main()
 {
 	int elem = 255;
-	conversion(elem, 2);
+	conversion(elem, 16);
 	return 0;	
 }
 
