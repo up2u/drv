@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-typedef long long selemtype;
+typedef unsigned char selemtype;
 
 typedef struct sqstack
 {

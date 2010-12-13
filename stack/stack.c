@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include "stack.h"
 
-#define STACK_INIT_SIZE 3
+#define STACK_INIT_SIZE 32
 #define STACK_INCREMENT 1
 
 /*------------------------------( )--------------------------------
