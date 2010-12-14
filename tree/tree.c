@@ -66,7 +66,7 @@ void create_tree1(btree **root, telemtype e)
 				}
 			}
 		}else{/*right tree*/
-			while((*root) != NULL && e > (*root)->data){
+			while((*root) != NULL && e >= (*root)->data){
 				ptr1 = *root;
 				(*root) = (*root)->rchild;
 				while((*root) != NULL && e < (*root)->data){
@@ -83,8 +83,7 @@ void create_tree1(btree **root, telemtype e)
 			ptr1->lchild->data = e;
 			ptr1->lchild->lchild = NULL;
 			ptr1->lchild->rchild = NULL;
-		}
-		if(e > ptr1->data){/*insert to rchild*/
+		}else{/*insert to rchild*/
 			if(!((ptr1->rchild) = (btree *)malloc(sizeof(btree)))){
 				exit(-1);	
 			}
