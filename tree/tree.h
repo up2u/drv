@@ -3,11 +3,11 @@
 
 #include <stdbool.h>
 
-typedef int qelemtype;
+typedef int telemtype;
 
 typedef struct btree
 {
-	qelemtype data;
+	telemtype data;
 	struct btree *lchild;
 	struct btree *rchild;
 }btree;
