@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "tree.h"
 
 
@@ -32,6 +33,68 @@ void create_tree(btree **root, telemtype e)
 	}
 }
 
+
+/*------------------------------create_tree1()--------------------------------
+* Function:create_tree1
+* Purpose:not use recursive function to create a tree, order by size, from left 
+*         to right child.
+* Parameters:
+*		  root(IN) -- address of tree point
+*         e(IN) -- element will be insert to tree.
+* Return:
+*-----------------------------------------------------------------------------*/
+void create_tree1(btree **root, telemtype e)
+{
+	btree *ptr = NULL;
+	btree *ptr1 = NULL;
+	if((*root) == NULL){
+		if(!((*root) = (btree *)malloc(sizeof(btree)))){
+			exit(-1);	
+		}
+		(*root)->data = e;
+		(*root)->lchild = NULL;
+		(*root)->rchild = NULL;
+	}else{
+		ptr = *root;
+		if(e < (*root)->data){/*left tree*/
+			while((*root) != NULL && e < (*root)->data){
+				ptr1 = *root;
+				(*root) = (*root)->lchild;
+				while((*root) != NULL && e > (*root)->data){
+					ptr1 = *root;
+					(*root) = (*root)->rchild;
+				}
+			}
+		}else{/*right tree*/
+			while((*root) != NULL && e > (*root)->data){
+				ptr1 = *root;
+				(*root) = (*root)->rchild;
+				while((*root) != NULL && e < (*root)->data){
+					ptr1 = *root;
+					(*root) = (*root)->lchild;
+				}
+			}
+		}
+
+		if(e < ptr1->data){/*insert to lchild*/
+			if(!((ptr1->lchild) = (btree *)malloc(sizeof(btree)))){
+				exit(-1);	
+			}
+			ptr1->lchild->data = e;
+			ptr1->lchild->lchild = NULL;
+			ptr1->lchild->rchild = NULL;
+		}
+		if(e > ptr1->data){/*insert to rchild*/
+			if(!((ptr1->rchild) = (btree *)malloc(sizeof(btree)))){
+				exit(-1);	
+			}
+			ptr1->rchild->data = e;
+			ptr1->rchild->lchild = NULL;
+			ptr1->rchild->rchild = NULL;
+		}
+		*root = ptr;
+	}
+}
 /*------------------------------( )--------------------------------
 * Function: 
 * Purpose: 
@@ -59,7 +122,7 @@ void preorder_tree(btree *root)
 *-----------------------------------------------------------------------------*/
 bool inorder_tree()
 {
-	
+;	
 }
 
 /*------------------------------( )--------------------------------
