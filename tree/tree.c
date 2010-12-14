@@ -3,28 +3,32 @@
 #include "tree.h"
 
 
-/*------------------------------( )--------------------------------
-* Function: 
-* Purpose: 
-*         
+/*------------------------------create_tree()recursive------------------------
+* Function: create_tree
+* Purpose: create bin tree, and the elem is from array,use recursive function
+*          and is ordered by size from lchild to rchild
 * Parameters:
-*         
+*         root(IN) -- the address of tree point
+*         e(IN) -- the element will be insert to tree
 * Return: 
 *-----------------------------------------------------------------------------*/
-void create_tree(btree **root)
+void create_tree(btree **root, telemtype e)
 {
-	char ch;
-	if((ch=getchar()) == '\n'){/*times of input ENTER to exit from recursive function 
-		                         it's different from  the previous example when use ' ', 
-								 when input charENTER,that every time:recursive 1/2,both
-								 be gone through,so not need to 2*lines ,and once continuous 
-								 input 2 ENTER, it will exit !!*/
-		*root = NULL;	
+	if(*root == NULL){
+	   *root = (btree *)malloc(sizeof(btree));
+	   if(!*root){
+		  exit(-1);  
+	   }	
+	   (*root)->data = e;
+	   (*root)->lchild = NULL;
+	   (*root)->rchild = NULL;
 	}else{
-		*root = (btree *)malloc(sizeof(btree));
-		(*root)->data = ch;
-		create_tree(&((*root)->lchild)); /*recursive 1 */
-		create_tree(&((*root)->rchild)); /*recursive 2 */
+		if(e < (*root)->data){/*less than root*/
+			create_tree(&(*root)->lchild, e);		
+
+		}else{
+			create_tree(&(*root)->rchild, e);		
+		}
 	}
 }
 
@@ -39,7 +43,7 @@ void create_tree(btree **root)
 void preorder_tree(btree *root)
 {
 	if(root != NULL){
-		printf("preorder: [0x%X]%c\n", root->data, root->data);
+		printf("preorder: %d\n", root->data);
 		preorder_tree(root->lchild);	
 		preorder_tree(root->rchild);	
 	}
