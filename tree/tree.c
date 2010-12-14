@@ -14,16 +14,17 @@
 void create_tree(btree **root)
 {
 	char ch;
-	if((ch=getchar()) == ' '){/*how many times input,so that it can exit from the recursive function??
-							   times=2*lines+1,(an line has one charENTER,without blank between char and ENTER)
-							   2*lines is the protocol of return from recursive function*/
-
+	if((ch=getchar()) == '\n'){/*times of input ENTER to exit from recursive function 
+		                         it's different from  the previous example when use ' ', 
+								 when input charENTER,that every time:recursive 1/2,both
+								 be gone through,so not need to 2*lines ,and once continuous 
+								 input 2 ENTER, it will exit !!*/
 		*root = NULL;	
 	}else{
 		*root = (btree *)malloc(sizeof(btree));
 		(*root)->data = ch;
-		create_tree(&((*root)->lchild));
-		create_tree(&((*root)->rchild));
+		create_tree(&((*root)->lchild)); /*recursive 1 */
+		create_tree(&((*root)->rchild)); /*recursive 2 */
 	}
 }
 
