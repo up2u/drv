@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "tree.h"
+#include "cirqueue.h"
 
 
 /*------------------------------create_tree()recursive------------------------
@@ -94,6 +95,61 @@ void create_tree1(btree **root, telemtype e)
 		*root = ptr;
 	}
 }
+
+cqueue q;
+int a = 1; /*accumulator for create_tree2( )*/
+btree *subroot = NULL;
+/*------------------------------create_tree2( )--------------------------------
+* Function: create_tree2
+* Purpose: create tree according to level,from left to right child
+*          use queue to store the root, so that the subroot every time get from
+*          queue will in order.!!
+*
+* Parameters:root(IN) -- address of tree point
+*            e(IN) -- element
+* Return: void
+*-----------------------------------------------------------------------------*/
+void create_tree2(btree **root, telemtype e)
+{
+	btree *ptr = NULL;
+	if(*root == NULL){
+		if(!(*root = (btree *)malloc(sizeof(btree)))){
+			exit(-1);
+		}
+		(*root)->data = e;
+		(*root)->lchild = NULL;
+		(*root)->rchild = NULL;
+		init_queue(&q);
+		enqueue(&q, *root);
+		a++;
+	}else{
+			if(a%2 == 0){
+				dequeue(&q, &subroot);
+			}
+			if(a%2 == 0){/*left child*/
+				if(!(ptr = (btree *)malloc(sizeof(btree)))){
+					exit(-1);
+				}
+				ptr->data = e;
+				ptr->lchild = NULL;
+				ptr->rchild = NULL;
+				subroot->lchild = ptr;
+				enqueue(&q,ptr);
+				a++;
+			}else{/*right child*/
+				if(!(ptr = (btree *)malloc(sizeof(btree)))){
+					exit(-1);
+				}
+				ptr->data = e;
+				ptr->lchild = NULL;
+				ptr->rchild = NULL;
+				subroot->rchild = ptr;
+				enqueue(&q,ptr);
+				a++;
+			}
+	}
+}
+
 /*------------------------------( )--------------------------------
 * Function: 
 * Purpose: 
