@@ -231,17 +231,30 @@ void preorder_tree2(btree *root)
 	}
 }
 
-/*------------------------------( )--------------------------------
-* Function: 
-* Purpose: 
+/*-----------------------------inorder_tree()----------------------------------
+* Function: inorder_tree refer to net ,quit smart ,remember.
+* Purpose:  not use recursive.
 *         
 * Parameters:
 *         
 * Return: 
 *-----------------------------------------------------------------------------*/
-bool inorder_tree()
+void inorder_tree(btree *root)
 {
-;	
+	btree *ptr = root;
+	btree *proot[20] = {NULL};
+	int top = 0;
+	
+	while(ptr || top > 0){
+		if(ptr){/*ptr is much useful*/
+			proot[top++] = ptr;
+			ptr = ptr->lchild;
+		}else{
+			ptr = proot[--top];
+			printf("inorder0: elem is %d\n", ptr->data);
+			ptr = ptr->rchild;
+		}
+	}
 }
 
 /*------------------------------( )--------------------------------
