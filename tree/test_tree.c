@@ -10,7 +10,7 @@ int main()
 		create_tree1(&root,tnode[i]);
 	}
 
-	preorder_tree1(root);
+	preorder_tree2(root);
 	return 0;
 }
 

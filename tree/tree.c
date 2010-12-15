@@ -206,6 +206,31 @@ void preorder_tree1(btree *root)
 	}
 }
 
+/*------------------------------preorder_tree2()-------------------------------
+* Function: preorder_tree2, not use recursive, refer to net. quite smart.!!
+* Purpose:
+*
+* Parameters:
+*
+* Return:
+*-----------------------------------------------------------------------------*/
+void preorder_tree2(btree *root)
+{
+	btree *ptr = root;
+	btree *proot[20] = {NULL};
+	int top = 0;
+	
+	while(ptr || top > 0){
+		if(ptr){
+			printf("pre2: elem is %d\n", ptr->data);
+			proot[top++] = ptr;
+			ptr = ptr->lchild;	
+		}else{
+			ptr = proot[--top]->rchild;	
+		}
+	}
+}
+
 /*------------------------------( )--------------------------------
 * Function: 
 * Purpose: 
