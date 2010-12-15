@@ -257,16 +257,40 @@ void inorder_tree(btree *root)
 	}
 }
 
-/*------------------------------( )--------------------------------
-* Function: 
-* Purpose: 
-*         
+/*------------------------------postorder_tree()------------------------------
+* Function: postorder_tree, 
+* Purpose: not use recursive.
+*         NOTE: add a flag to not print others.only print the post order node.
 * Parameters:
 *         
 * Return: 
 *-----------------------------------------------------------------------------*/
-bool postorder_tree()
+void postorder_tree(btree *root)
 {
-	
+	btree *ptr = root;
+	btree *proot[20] = {NULL};
+	int flag[20] = {0};
+	int top = -1;
+
+	while(ptr || top != -1){
+		while(ptr){/*push*/
+			top++;
+			proot[top] = ptr;
+			flag[top] = 0;
+			ptr = ptr->lchild;	
+		}
+		while(top >= 0 && flag[top] == 1){/*import*/
+			ptr = proot[top];
+			printf("post order: elem is %d\n", ptr->data);
+			top--;	
+		}
+		if(top >= 0){
+			ptr = proot[top];
+			flag[top] = 1;
+			ptr = ptr->rchild;	
+		}else{
+			ptr = NULL;	
+		}
+	}
 }
 
