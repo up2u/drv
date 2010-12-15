@@ -150,9 +150,9 @@ void create_tree2(btree **root, telemtype e)
 	}
 }
 
-/*------------------------------( )--------------------------------
-* Function: 
-* Purpose: 
+/*------------------------------preorder_tree()--------------------------------
+* Function:preorder_tree
+* Purpose: recursive.
 *         
 * Parameters:
 *         
@@ -164,6 +164,45 @@ void preorder_tree(btree *root)
 		printf("preorder: %d\n", root->data);
 		preorder_tree(root->lchild);	
 		preorder_tree(root->rchild);	
+	}
+}
+
+
+/*------------------------------preorder_tree1()-------------------------------
+* Function:preorder_tree1,(need to complete.!!)
+* Purpose:not recursive, use stack to store the node point, and shoud del some  
+*         unneeded node, and directory go to his parent node for go throuth his 
+*         rchild,!!! 
+* Parameters:
+*
+* Return:
+*-----------------------------------------------------------------------------*/
+void preorder_tree1(btree *root)
+{
+	btree *ptr = root;
+	btree *proot[20] = {NULL};
+	int top = 0;
+	if(root){
+		proot[top++] = root;
+	}
+
+	while(ptr != NULL && top != 0){/*while1: */
+		printf("pre order, elem is %d\n", ptr->data);
+		ptr = ptr->lchild;
+		proot[top++] = ptr; /*push*/
+		while(ptr == NULL && top != 0){/*while2:left tree */
+			ptr = proot[--top]; /*pop NULL*/
+			ptr = proot[--top]; /*del from stack of this node,so next will get his parent node*/
+			ptr = ptr->rchild;
+			proot[top++] = ptr;
+			while(ptr == NULL && --top != 0){/*right tree NULL,
+				                              if in right tree,when get lastest one top will equ -1 */
+				ptr = proot[top];/*pop NULL*/	
+				ptr = proot[--top];
+				ptr = ptr->rchild;
+				proot[top++] = ptr;
+			}
+		}
 	}
 }
 

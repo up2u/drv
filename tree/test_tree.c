@@ -7,10 +7,10 @@ int main()
 	int i = 0;
 	telemtype tnode[9] = {8,6,10,4,7,9,11,12,5};
 	for(i=0; i<9; i++){
-		create_tree2(&root,tnode[i]);
+		create_tree1(&root,tnode[i]);
 	}
 
-	preorder_tree(root);
+	preorder_tree1(root);
 	return 0;
 }
 
