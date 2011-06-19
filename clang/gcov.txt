@@ -1,0 +1,7 @@
+1: gcc bubblesort.c -o bubblesort -ftest-coverage -fprofile-arcs
+
+2: ./bubblesort
+
+3: gcov bubblesort.c  or  gcov -b bubblesort.c
+
+

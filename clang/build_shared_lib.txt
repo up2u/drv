@@ -1,0 +1,16 @@
+build a shared library. 
+1:
+# ls 
+hello.c hello.h usehello.c 
+# gcc -fPIC -Wall -g -c hello.c -o libhello.o 
+# gcc -g -shared -Wl,-soname,libhello.so.0 -o libhello.so.0.0 libhello.o -lc 
+# ls
+hello.c hello.h usehello.c libhello.o libhello.so.0.0 
+# ln -sf libhello.so.0.0 libhello.so.0
+# ln -sf libhello.so.0 libhello.so
+
+2:
+then test the shared library
+# gcc -Wall -g -c usehello.c -o usehello.o
+# gcc -g -o usehello_dynamic usehello.o -L ./ -lhello 
+# LD_LIBRARY_PATH=`pwd`  ./usehello_dynamic            # when used in FreeBSD, use setenv to set LD_LIBRARY_PATH

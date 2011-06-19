@@ -1,0 +1,35 @@
+1: properity:
+   ()
+   ++n,n--
+   */
+   +,-
+
+2: const:
+     >const int *p  ->  point to the const data pointed by p
+	 >int * const p ->  the pointer is const,
+   volatile
+   restrict: for compiler, only used for pointer
+
+3:       hex         oct           dec
+
+char     0x41        0101          ..
+int                                65
+unsigned int  0x41u  0101u         65u
+long                               65L
+unsigned long                      65UL
+long long                          65LL
+unsigned long long                 65ULL
+
+4: range
+ float: -2^128 ~ +2^128 == -3.40E+38 ~ +3.40E+38, at least 6 precision
+ double: -2^1024 ~ +2^1024 == -1.79E+308 ~ +1.79E+308, at least 15 precision
+
+5:
+   static variable:  whose lifetime extends across the entire run of the program
+   > Static global variables: variables declared as static at the top level of a source
+     file (outside any function definitions) are only visible throughout that
+	 file ("file scope", also known as "internal linkage").
+   > Static local variables: variables declared as static inside a function are statically
+      allocated while having the same scope as automatic local variables. Hence whatever
+	  values the function puts into its static local variables during one call will still
+	  be present when the function is called again.
