@@ -1,0 +1,25 @@
+1: use x/nfu
+when like x/10cw: it will print the first byte to char, ignore the other 3 bytes
+     then skip to the 5(from 1) byte to char, then 9th char, ... all ignore the the followed 3 bytes. 
+	 x/10ch: has the same effect..
+eg: 
+ (gdb) x/s  argv[0]
+0xbfbfed74:      "/backup/ffmpeg-0.8.1/ffmpeg_g"
+(gdb) x/10cw argv[0]
+0xbfbfed74:     47 '/'  107 'k' 102 'f' 101 'e'
+0xbfbfed84:     46 '.'  47 '/'  112 'p' 103 'g'
+0xbfbfed94:     0 '\0'  95 '_'
+(gdb) x/10ch argv[0]
+0xbfbfed74:     47 '/'  97 'a'  107 'k' 112 'p' 102 'f' 109 'm' 101 'e' 45 '-'
+0xbfbfed84:     46 '.'  46 '.'
+
+2: x/n[ox][bhw] 
+它都是从内存中的二进制数（存放方式与endian有关），读出byte/halfword/word
+然后以１/2/4 为一个单元进行显示.
+eg：
+(gdb) x/2tw argv[0]
+0xbfbfed74:     01100011011000010110001000101111        00101111011100000111010101101011
+(gdb) x/2ob argv[0]
+0xbfbfed74:     057     0142  
+         :   57    <-- 00 101 111
+		 :   0142  <-  01 100 010
