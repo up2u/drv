@@ -3,12 +3,14 @@
 int main()
 {
 	FILE *fp = NULL;
+	FILE *fp_w = NULL;
 	int i = 0, j = 0;
 	int seek_length = 0;
 	int file_length = 0;
 	char c = '\0';
 
 	fp = fopen("/tmp/f2.txt", "r");
+	fp_w = fopen("/tmp/f2_w.txt", "a+");
 	fseek(fp, 0L, SEEK_END);
 	file_length = ftell(fp);
 	printf("file length is %lu\n",file_length);
@@ -23,9 +25,7 @@ int main()
 	
 		for(l=0; l<i*j; l++){
 			fread(&c,1, 1, fp);
-			putchar(c);
-			if(k%j == 0) putchar('\n');
-			k++;
+			fwrite(&c, 1, 1, fp_w);
 		}
 		seek_length += 2*4 + i*j;
 	}
