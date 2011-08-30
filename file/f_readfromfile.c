@@ -17,17 +17,19 @@ int main()
 	
 	fseek(fp, 0L, SEEK_SET);
 
-//	while(!feof(fp)){  // feof will do 1 more time !!
-	while(seek_length < file_length){
-		int k = 1,l = 0;
-		fread(&i, 4, 1, fp);
-		fread(&j, 4, 1, fp);
-	
+	while(!feof(fp)){  // feof will do 1 more time !!
+		int l = 0;
+
+		if(fread(&i, 4, 1, fp) < 1) // must add this judgement, when reach end, it will return 0
+			return -1;
+		if(fread(&j, 4, 1, fp) < 1)
+			return -1;
 		for(l=0; l<i*j; l++){
-			fread(&c,1, 1, fp);
-			fwrite(&c, 1, 1, fp_w);
+			if(fread(&c,1, 1, fp) < 1)
+				return -1;
+			if(fwrite(&c, 1, 1, fp_w) < 1)
+				return -1;
 		}
-		seek_length += 2*4 + i*j;
 	}
 
 	return 0;	
