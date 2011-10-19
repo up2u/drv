@@ -1,0 +1,4 @@
+1: fork2.c
+   ?? why execute 2 times char:a,b
+
+ 
