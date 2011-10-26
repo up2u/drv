@@ -1,0 +1,9 @@
+1: signal operation function
+>> how to generate a signal
+  kill : send signal
+  raise:  send a signal to the current process
+  alarm - set an alarm clock for delivery of a signal
+  ualarm - schedule signal after given number of microseconds
+>> handle signal
+  signal()
+  sigaction()
