@@ -1,0 +1,5 @@
+1: su root
+2: mknod /tmp/myFIFO p
+3: ls > /tmp/myFIFO
+4: in another terminal: cat /tmp/myFIFO
+   will show the result of ls command.
