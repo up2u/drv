@@ -1,0 +1,5 @@
+1: command: ipcs
+2: Sys VIPC key
+key variable struct : bit (31-24) equ the 2nd args of ftok
+					  bit (23-16) equ st_dev's LSB 8 bits
+					  bit (15-0)  equ st_ino's LSB 16 bits
