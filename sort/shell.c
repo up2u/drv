@@ -3,9 +3,9 @@
 void shell(int *arr, int n, int inc)
 {
 	int i = 0, j = 0;
-	for(i=0; i+inc<n; i++){
-		int val = arr[i+inc];
-		j = i + inc;
+	for(i=inc; i<n; i++){
+		int val = arr[i];
+		j = i;
 		while(j-inc>=0 && arr[j-inc] > val){
 			arr[j] = arr[j-inc];
 			j -= inc;
