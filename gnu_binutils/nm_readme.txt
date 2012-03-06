@@ -11,8 +11,8 @@ See the type of symbols
 08048330 t __do_global_dtors_aux
 08048390 t frame_dummy
 080483b4 T foo                            !! T
-080483c8 t bar  			  !! bar
-080483cd T main 			  !! main
+080483c8 t bar  			  !! t
+080483cd T main 			  !! T
 080483f0 T __libc_csu_init
 08048450 T __libc_csu_fini
 08048455 T __i686.get_pc_thunk.bx
