@@ -14,6 +14,7 @@ int main()
 		n++;
 	}
 	printf("length is %d\n", n);
+	fclose(fp);
 	return 0;
 }
 
