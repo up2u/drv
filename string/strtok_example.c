@@ -2,7 +2,7 @@
 #include <string.h>
 int main(int argc,char **argv)
 {
-    char * buf1="aaa, ,a, ,,,bbb-c,,,ee|abc";
+    char buf1[]="aaa, ,a, ,,,bbb-c,,,ee|abc";
     /* Establish string and get the first token: */
     char* token = strtok( buf1, ",-|");
     while( token != NULL )
