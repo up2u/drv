@@ -14,7 +14,7 @@ void init_hash_tab(struct gdlist *ptr_hash, int size)
 	int i=0;
 	for(i=0; i<size; i++)
 	{
-		ptr_hash[i].next = &(ptr_hash[i]);	
+		ptr_hash[i].next = &(ptr_hash[i]);
 		ptr_hash[i].prev = &(ptr_hash[i]);
 	}
 }
@@ -23,7 +23,7 @@ struct student
 {
 	int score;
 	char name;
-	struct gdlist list;	
+	struct gdlist list;
 };
 
 void ins_hash_tab(struct student *stu)
@@ -45,25 +45,26 @@ void gen_score_name(struct student *stu, int num)
 		fprintf(p, "student %d: score=%d,name=%c\n", i+1, stu[i].score, stu[i].name);
 		ins_hash_tab(&stu[i]);
 	}
+    fclose(p);
 }
 
 void hash_search(int score)
 {
 	int key=score%HASH_SIZE;
 	struct student *pstu = NULL;
-	struct gdlist *pgdlist = NULL;	
+	struct gdlist *pgdlist = NULL;
 	pgdlist = get_glist_head(&(hash_tab[key]));
 	for(; pgdlist != &(hash_tab[key]); pgdlist = get_glist_next(pgdlist))
 	{
 		pstu = (struct student *)container_of(struct student, list, (size_t)pgdlist);
 		if(pstu->score == score)
 		{
-			printf("now find it score=%d,name=%c\n", pstu->score, pstu->name);	
+			printf("now find it score=%d,name=%c\n", pstu->score, pstu->name);
 		}
 	}
 	if(pgdlist == &(hash_tab[key]))
 	{
-		printf("search end.\n");	
+		printf("search end.\n");
 	}
 }
 
@@ -73,7 +74,7 @@ int main()
 	struct student stu[STUDENT_NUM];
 
 	init_hash_tab(hash_tab, HASH_SIZE);
-	gen_score_name(stu, STUDENT_NUM);	
+	gen_score_name(stu, STUDENT_NUM);
 	do
 	{
 		printf("input score to search. : ");
@@ -81,6 +82,6 @@ int main()
 		hash_search(search);
 	}while(1);
 
-	return 0;	
+	return 0;
 }
 
