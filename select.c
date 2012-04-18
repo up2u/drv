@@ -15,12 +15,12 @@ int main(int argc, char *argv[])
     tv.tv_sec = 5;
     tv.tv_usec = 0;
 
-    retval = select(1, &rfds, NULL, NULL, &tv);
+    retval = select(1, &rfds, NULL, NULL, &tv); // fds + 1
     /*don't rely on the value of tv now !*/
 
     if(retval == -1)
         perror("select()");
-    else if(retval){
+    else if(retval){  // FD_ISSET(0, &rfds) will be true
         printf("the retval = %d\n");
         printf("data is available now. \n");
     }
