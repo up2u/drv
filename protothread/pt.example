@@ -1,0 +1,58 @@
+// an example from net show protothread
+// use switch case to store the location of
+// code block(in actually it is return)
+// when code rerun, it will continue from
+// the stored switch case.
+
+PT_THREAD(radio_wake_thread(struct pt *pt)) {
+　　PT_BEGIN(pt);
+　　while(1) {
+　　　　radio_on();
+　　　　timer_set(&timer, T_AWAKE);
+　　　　PT_WAIT_UNTIL(pt, timer_expired(&timer));
+　　　　timer_set(&timer, T_SLEEP);
+　　　　if(!communication_complete()) {
+　　　　　　PT_WAIT_UNTIL(pt, communication_complete()‖timer_expired(&timer));
+　　　　}
+　　　　if(!timer_expired(&timer)) {
+　　　　　　radio_off();
+　　　　　　PT_WAIT_UNTIL(pt, timer_expired(&timer));
+　　　　}
+　　}
+　　PT_END(pt);
+}
+
+// when expanded it is:
+// + mean expanded codes
+
+
+void radio_wake_thread(struct pt *pt) {
+switch(pt﹥lc) {
+　　case 0:
+　　while(1) {
+　　　　radio_on();
+　　　　timer_set(&timer, T_AWAKE);
++　　　　pt﹥lc = 8;
++　　　　case 8:
++　　　　　　if(!timer_expired(&timer)) {
++　　　　　　　　return;
++　　　　　　}
+　　　　　　timer_set(&timer, T_SLEEP);
+　　　　　　if(!communication_complete()) {
++　　　　　　　　pt﹥lc = 13;
++　　　　　　　　case 13:
++　　　　　　　　if(!(communication_complete() ||timer_expired(&timer))) {
++　　　　　　　　　　return;
++　　　　　　　　}
+　　　　　　}
+　　　　　　if(!timer_expired(&timer)) {
+　　　　　　　　radio_off();
++　　　　　　　　pt﹥lc = 18;
++　　　　　　　　case 18:
++　　　　　　　　if(!timer_expired(&timer)) {
++　　　　　　　　　　return;
++　　　　　　　　}
+　　　　　　}
+　　　　}
+　　}
+}
