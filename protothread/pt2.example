@@ -1,0 +1,42 @@
+#include "pt.h"
+static int counter;
+static struct pt example_pt;
+static
+PT_THREAD(example(struct pt *pt))
+{
+  PT_BEGIN(pt);
+  while(1) {
+    PT_WAIT_UNTIL(pt, counter == 1000);
+    printf("Threshold reached\n");
+    counter = 0;
+  }
+  PT_END(pt);
+}
+
+// original
+int main(void)
+{
+  counter = 0;
+  PT_INIT(&example_pt);
+  while(1) {
+    example(&example_pt);
+    counter++;
+  }
+  return 0;
+}
+// expandes to
+
+static
+char example(struct pt *pt)
+{
+  switch(pt->lc) { case 0:
+
+  while(1) {
+    pt->lc =__LINE__; case __LINE__:
+
+    if(!(counter == 1000)) return 0;
+    printf("Threshold reached\n");
+    counter = 0;
+  }
+  } pt->lc = 0; return 2;
+}
