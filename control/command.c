@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include "command.h"
 
-int do_echo(void *arg);
+int do_echo(void *arg); // prototype
 int do_list(void *arg);
 
 struct cmd cmd_tbl[] =
 {
-    {"echo", do_echo},
+    {"echo", do_echo},  // ,
     {"list", do_list}
 };
 
