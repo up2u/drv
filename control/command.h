@@ -17,4 +17,4 @@ typedef struct cmd
 
 extern struct cmd cmd_tbl[2]; // can't use COMMAND_TABLE_SIZE ??!!
 
-#endif
+#endif  // _COMMAND_H_
