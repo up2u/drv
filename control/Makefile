@@ -1,13 +1,15 @@
 
 #global defines
 RM := rm -f
-INCPATH := -I./macro/ -I./cmd/ -I./node/ -I./config/
+INCPATH := -I./defines/ -I./cmd/ -I./node/ -I./types/
 CFLAGS := -c -g3 ${INCPATH}
 LDFLAGS := -lc
 
-GCC := gcc
+CC := gcc
 #LD := ld
 LD := gcc
+
+include ${srcs:%.c=%.d}
 
 dirs := cmd
 srcs := $(wildcard ${dirs}/*.c *.c)
@@ -19,11 +21,11 @@ test.elf: ${OBJS}
 	$(LD) ${LDFLAGS} -o $@ $^
 
 %.o:%.c
-	${GCC} ${CFLAGS} -o $@ $<
+	${CC} ${CFLAGS} -o $@ $<
 
 %.d:%.c
 	set -e; rm -f $@; \
-	${GCC} -MM ${CFLAGS} $< > $@.$$$$; \
+	${CC} -MM ${CFLAGS} $< > $@.$$$$; \
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$
 
