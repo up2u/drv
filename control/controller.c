@@ -1,6 +1,8 @@
 #include <stdio.h>
-#include <string.h>
 #include "cmd/command.h"
+
+// This file is just a toplevel controller
+
 
 void usage();
 

@@ -1,15 +1,16 @@
 #include <stdio.h>
+#include <string.h>
 #include "command.h"
 
-int do_echo(void *arg); // prototype
-int do_list(void *arg);
+static int do_echo(void *arg); // prototype
+static int do_list(void *arg);
 int parse_command(char *string);
 
 //======================================================
 //
 //
 //======================================================
-struct cmd cmd_tbl[] =
+static struct cmd cmd_tbl[] =
 {
     {"echo", do_echo},  // ,
     {"list", do_list}
@@ -19,7 +20,7 @@ struct cmd cmd_tbl[] =
 //
 //
 //------------------------------------------------------
-int do_echo(void *arg)
+static int do_echo(void *arg)
 {
     printf("the command is do_echo\n");
 
@@ -31,7 +32,7 @@ int do_echo(void *arg)
 //
 //------------------------------------------------------
 
-int do_list(void *arg)
+static int do_list(void *arg)
 {
     printf("the command is do_list\n");
 
