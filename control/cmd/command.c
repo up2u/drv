@@ -1,7 +1,14 @@
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include "command.h"
 #include "defines.h"
+#include "node.h"
+
 
 static int do_echo(char *string); // prototype
 static int do_list(char *string);
@@ -9,8 +16,37 @@ static int do_add(char *string);
 
 int parse_command(char *string);
 
-//#define printf(...) MYPRINT(...)
+//------------------------------------------------------
+// init the node struct
+// give him some name
+//------------------------------------------------------
 
+static int init_pipe(node_t *node,u32 index, u32 pid)
+{
+    node->index = index;
+    node->pid = pid;
+    sprintf(node->cmd_in.name, "/tmp/fifo/pp_cmd_in_%d", index);
+    sprintf(node->cmd_out.name, "/tmp/fifo/pp_cmd_out_%d", index);
+    sprintf(node->data_in.name, "/tmp/fifo/pp_data_in_%d", index);
+    sprintf(node->data_out.name, "/tmp/fifo/pp_data_out_%d", index);
+    if((node->cmd_in.pipe = open(node->cmd_in.name, O_RDONLY)) == -1) {
+        MYPRINT("open");
+        return -1;
+    }
+    if((node->cmd_out.pipe = open(node->cmd_out.name, O_WRONLY)) == -1) {
+        MYPRINT("open");
+        return -1;
+    }
+    if((node->data_in.pipe = open(node->data_in.name, O_RDONLY)) == -1) {
+        MYPRINT("open");
+        return -1;
+    }
+    if((node->data_out.pipe = open(node->cmd_in.name, O_WRONLY)) == -1) {
+        MYPRINT("open");
+        return -1;
+    }
+    return 1;
+}
 
 //======================================================
 //
@@ -67,16 +103,37 @@ static int do_add(char *string)
     int id = 0;
     char *elf_file = NULL;
     char *str1 = strtok(string, " ");
+    pid_t pid;
+    node_t nd;
     if(str1 != NULL){
         id = strtol(str1, NULL, 10);
         printf("the id num is %d\n", id);
-    }
-    elf_file = strtok(NULL, " ");
-    if(elf_file){
-        printf("the elf_file is %s\n", elf_file);
+    }else{
+        MYPRINT("add node");
+        printf("usage: ./a.out add id node_elf\n");
+        return -1;
     }
 
-    return 0;
+    memset(&nd, '\0', sizeof(nd));
+    pid = fork();
+
+    switch(pid){
+    case -1:
+        MYPRINT("fork error");
+        break;
+    case 0:
+        MYPRINT("child process");
+        elf_file = strtok(NULL, " ");
+        if(elf_file){
+            printf("the elf_file is %s\n", elf_file);
+            system(elf_file); // node execute elf file
+        }
+        break;
+    default:
+        MYPRINT("parent process");
+        printf("child pid = %d\n", pid);
+        init_pipe(&nd, id, pid);
+    }
 }
 
 int parse_command(char *string)

@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
         p_buf = p_buf + strlen(p_buf) + 1;
         p_buf[-1] = ' ';
     }
-    p_buf[-1] = '\n';
+//    p_buf[-1] = '\n';
 
     parse_command(arg_buf);
 

@@ -1,7 +1,7 @@
 
 #global defines
 RM := rm -f
-INCPATH := -I./macro/ -I./cmd/
+INCPATH := -I./macro/ -I./cmd/ -I./node/ -I./config/
 CFLAGS := -c -g3 ${INCPATH}
 LDFLAGS := -lc
 
@@ -11,7 +11,7 @@ LD := gcc
 
 dirs := cmd
 srcs := $(wildcard ${dirs}/*.c *.c)
-OBJS := $(patsubst %.c,%.o,${srcs})
+OBJS := $(srcs:.c=.o)
 
 all: test.elf
 
@@ -21,12 +21,17 @@ test.elf: ${OBJS}
 %.o:%.c
 	${GCC} ${CFLAGS} -o $@ $<
 
-controller.c : cmd/command.h
-command.c : command.h defines.h
+%.d:%.c
+	set -e; rm -f $@; \
+	${GCC} -MM ${CFLAGS} $< > $@.$$$$; \
+	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+	rm -f $@.$$$$
+
+
 
 .PHONY : clean
 clean:
 	find . -name "*.[oa]" | xargs ${RM} ;\
 	find . -name "*.elf"  -exec ${RM} {} \; ;\
 	find . -name "*.out"  -exec ${RM} {} \; ;\
-	echo "path:"`pwd`
+#	echo "path:"`pwd`
