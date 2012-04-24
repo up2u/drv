@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "command.h"
+#include "cmd/command.h"
 
 void usage();
 int parse_command();
@@ -41,7 +41,11 @@ int parse_command(char *string)
         }
     }
     if(i == COMMAND_TABLE_SIZE){
+        printf("-----------NOTICE begin------------\n");
+        putchar('\n');
         printf("bad command or not implemented yes\n");
+        putchar('\n');
+        printf("-----------NOTICE end--------------\n");
         return 0;
     }
 

@@ -8,7 +8,7 @@ int main(int argc,char **argv)
     while( token != NULL )
     {
     /* While there are tokens in "string" */
-        printf( "%s ", token );
+        printf( "%s\n", token );
     /* Get next token: */
         token = strtok( NULL, ",-|");
     }

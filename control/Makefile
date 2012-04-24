@@ -7,11 +7,13 @@ GCC := gcc
 #LD := ld
 LD := gcc
 
+dirs := cmd
 
 
 all: test.elf
 
-OBJS := controller.o command.o
+srcs := $(wildcard ${dirs}/*.c *.c)
+OBJS := $(subst %.c,%.o,${srcs})
 
 test.elf: ${OBJS}
 	$(LD) ${LDFLAGS} -o $@ $^
@@ -19,7 +21,7 @@ test.elf: ${OBJS}
 %.o:%.c
 	${GCC} ${CFLAGS} -o $@ $<
 
-controller.c : command.h
+controller.c : cmd/command.h
 command.c : command.h
 
 .PHONY : clean
