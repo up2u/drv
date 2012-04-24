@@ -3,8 +3,8 @@
 #include "command.h"
 #include "defines.h"
 
-static int do_echo(void *arg); // prototype
-static int do_list(void *arg);
+static int do_echo(char *string); // prototype
+static int do_list(char *string);
 static int do_add(char *string);
 
 int parse_command(char *string);
@@ -27,7 +27,7 @@ static struct cmd cmd_tbl[] =
 //
 //
 //------------------------------------------------------
-static int do_echo(void *arg)
+static int do_echo(char *string)
 {
     printf("the command is do_echo\n");
 
@@ -39,7 +39,7 @@ static int do_echo(void *arg)
 //
 //------------------------------------------------------
 
-static int do_list(void *arg)
+static int do_list(char *string)
 {
     printf("the command is do_list\n");
 
@@ -85,6 +85,8 @@ int parse_command(char *string)
     for(i=0; i<COMMAND_TABLE_SIZE; i++){
         if(strcmp(string, cmd_tbl[i].name) == 0){
             printf("the command is %s\n", cmd_tbl[i].name);
+            MYPRINT("run handler");
+            cmd_tbl[i].handler(string);
             return 1;
         }
     }
