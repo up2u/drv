@@ -1,10 +1,16 @@
 #include <stdio.h>
 #include <string.h>
 #include "command.h"
+#include "defines.h"
 
 static int do_echo(void *arg); // prototype
 static int do_list(void *arg);
+static int do_add(char *string);
+
 int parse_command(char *string);
+
+//#define printf(...) MYPRINT(...)
+
 
 //======================================================
 //
@@ -13,7 +19,8 @@ int parse_command(char *string);
 static struct cmd cmd_tbl[] =
 {
     {"echo", do_echo},  // ,
-    {"list", do_list}
+    {"list", do_list},
+    {"add",  do_add}
 };
 
 //------------------------------------------------------
@@ -39,6 +46,39 @@ static int do_list(void *arg)
     return 0;
 }
 
+//------------------------------------------------------
+//
+//
+//------------------------------------------------------
+static int do_send(char *string)
+{
+
+    return 0;
+}
+
+//------------------------------------------------------
+// add node
+// this will fork a process ??
+// use toplogy: or use default net-list ??
+//
+//------------------------------------------------------
+static int do_add(char *string)
+{
+    int id = 0;
+    char *elf_file = NULL;
+    char *str1 = strtok(string, " ");
+    if(str1 != NULL){
+        id = strtol(str1, NULL, 10);
+        printf("the id num is %d\n", id);
+    }
+    elf_file = strtok(NULL, " ");
+    if(elf_file){
+        printf("the elf_file is %s\n", elf_file);
+    }
+
+    return 0;
+}
+
 int parse_command(char *string)
 {
     int i;
@@ -54,6 +94,7 @@ int parse_command(char *string)
         printf("bad command or not implemented yes\n");
         putchar('\n');
         printf("-----------NOTICE end--------------\n");
+        MYPRINT("Test MYPRINT");
         return 0;
     }
 

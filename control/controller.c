@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "cmd/command.h"
+#include "command.h"
 
 // This file is just a toplevel controller
 
@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
         usage();
         return -1;
     }
-    if(parse_command(argv[1])){
+    if(parse_command(argv[1])){ // argv[2] argv[3] ... list need to process.. !!
         printf("command found\n");
     }
 
