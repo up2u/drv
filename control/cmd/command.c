@@ -82,11 +82,13 @@ static int do_add(char *string)
 int parse_command(char *string)
 {
     int i;
+    char *cmd = strtok(string, " ");
+
     for(i=0; i<COMMAND_TABLE_SIZE; i++){
-        if(strcmp(string, cmd_tbl[i].name) == 0){
+        if(strcmp(cmd, cmd_tbl[i].name) == 0){
             printf("the command is %s\n", cmd_tbl[i].name);
             MYPRINT("run handler");
-            cmd_tbl[i].handler(string);
+            cmd_tbl[i].handler(cmd + strlen(cmd) + 1);
             return 1;
         }
     }
