@@ -47,7 +47,7 @@ void *sim_data_thread(void *node)
 // init the node struct
 // give him some name
 //------------------------------------------------------
-int init_sim_node(node_t *node,u32 index, u32 pid)
+int sim_mgr_node(node_t *node,u32 index, u32 pid)
 { // fix me mknod and mkfifo
   // can't use /tmp/fifo/pp.. because can't mkdir. fifo
   // tempolary use /tmp/pp..
