@@ -11,13 +11,13 @@
 #include "defines.h"
 
 //void *(*start_routine)(void*)
-void *data_in_thread(void *);
-void *cmd_in_thread(void *);
+void *sim_data_in_thread(void *);
+void *sim_cmd_in_thread(void *);
 
 // fix me
 #define MAX_PIPE_SIZE 128
 
-void *data_in_thread(void *node)
+void *sim_data_in_thread(void *node)
 {// data from node to simulator
     static char msg[MAX_PIPE_SIZE];
     node_t  *pnode = (node_t *)node;
@@ -25,14 +25,14 @@ void *data_in_thread(void *node)
 
     while(1){
         if((read_num = read(pnode->data_in.pipe, msg, MAX_PIPE_SIZE)) == -1){
-            MYPRINT("data_in_thread");
+            MYPRINT("sim_data_in_thread");
         }
         usleep(5);
-        printf("the msg recived from data_in_thread is %c\n", msg[0]);
+        printf("the msg recived from sim_data_in_thread is %c\n", msg[0]);
     }
 }
 
-//void *cmd_in_thread(void *node)
+//void *sim_cmd_in_thread(void *node)
 //{
 //    node_t *pnode = (node_t *)node;
 //
@@ -67,6 +67,10 @@ int init_node(node_t *node,u32 index, u32 pid)
 //        MYPRINT("open 1");
 //        return -1;
 //    }
+//    if(pthread_create(&(node->cmd_in.thread), NULL, sim_cmd_in_thread, (void *)node) != 0){
+//        MYPRINT("cmd in thread");
+//    }
+
 
     sprintf(node->data_in.name, "/tmp/pp_data_in_%d", index);
     if(mknod(node->data_in.name, S_IFIFO | 0666, 0) < 0){
@@ -77,13 +81,9 @@ int init_node(node_t *node,u32 index, u32 pid)
         MYPRINT("open 3");
         return -1;
     }
-
-    if(pthread_create(&(node->data_in.thread), NULL, data_in_thread, (void *)node) != 0){
+    if(pthread_create(&(node->data_in.thread), NULL, sim_data_in_thread, (void *)node) != 0){
         MYPRINT("data in thread");
     }
-//    if(pthread_create(&(node->cmd_in.thread), NULL, cmd_in_thread, (void *)node) != 0){
-//        MYPRINT("cmd in thread");
-//    }
     return 1;
 }
 
