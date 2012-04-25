@@ -9,13 +9,57 @@
 #include "defines.h"
 #include "node.h"
 
+#define MAX_ARG_BUF 512
 
 static int do_echo(char *string); // prototype
 static int do_list(char *string);
 static int do_add(char *string);
 void do_script(char *string);
 void do_node_num(char *string);
+void parse_command(char *string);
+void cli(void);
+
+static struct cmd cmd_tbl[] =
+{
+    {"echo", do_echo},  // ,
+    {"list", do_list},
+    {"add",  do_add}
+};
+
+
 int NNODE = 0;
+
+void cli()
+{
+    char msg[MAX_ARG_BUF];
+    char *msg_ptr = NULL;
+
+    while(1){
+        printf("sim >> ");
+        fflush(stdout);
+        fgets(msg, sizeof(msg), stdin);
+        if((msg_ptr = strchr(msg, '\n')) != NULL){
+            *msg_ptr = '\0';
+        }
+        if(strcmp(msg, "\0")){ // an error when use '\0' ??
+            parse_command(msg);
+        }
+    }
+}
+
+void parse_command(char *string)
+{
+    char *cmd;
+    int i;
+
+    cmd = strtok(string, " ");
+    for(i=0; i<COMMAND_TABLE_SIZE; i++){
+        if(!strcmp(cmd_tbl[i].name, cmd)){
+            //find cmd
+            cmd_tbl[i].handler(string + strlen(cmd) + 1);
+        }
+    }
+}
 
 
 int parse_option(int argc, char **argv);
@@ -100,12 +144,7 @@ static int init_pipe(node_t *node,u32 index, u32 pid)
 //
 //
 //======================================================
-static struct cmd cmd_tbl[] =
-{
-    {"echo", do_echo},  // ,
-    {"list", do_list},
-    {"add",  do_add}
-};
+
 
 //------------------------------------------------------
 //
@@ -226,5 +265,6 @@ int parse_option(int argc, char **argv)
             // get other command from command line.
         }
     }
+    cli();
     return 1;
 }

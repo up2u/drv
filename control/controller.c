@@ -17,10 +17,10 @@ int main(int argc, char *argv[])
     int i;
     char *p_buf = arg_buf;
 
-    if(argc < 2){
-        usage();
-        return -1;
-    }
+//    if(argc < 2){
+//        usage();
+//        return -1;
+//    }
 //    for(i=0; i<argc-1; i++){
 //        strcpy(p_buf, argv[i+1]);
 //        p_buf = p_buf + strlen(p_buf) + 1;
@@ -34,15 +34,15 @@ int main(int argc, char *argv[])
 }
 
 
-void usage()
-{
-    printf("---------usage begin-------------\n");
-    printf("* ./controller.exe\n");
-    printf("*\n");
-    printf("*\n");
-    printf("*\n");
-    printf("*\n");
-    printf("---------usage end---------------");
-    putchar('\n');
-}
+//void usage()
+//{
+//    printf("---------usage begin-------------\n");
+//    printf("* ./controller.exe\n");
+//    printf("*\n");
+//    printf("*\n");
+//    printf("*\n");
+//    printf("*\n");
+//    printf("---------usage end---------------");
+//    putchar('\n');
+//}
 

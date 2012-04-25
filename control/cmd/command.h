@@ -1,9 +1,11 @@
 #ifndef _COMMAND_H_
 #define _COMMAND_H_
 
-int parse_command(int argc, char **argv);
+
+int parse_option(int argc, char **argv);
 
 #define COMMAND_TABLE_SIZE (sizeof(cmd_tbl)/sizeof(struct cmd))
+
 
 // NOTICE : retrun type
 typedef int(* handler_t)(char *string);
