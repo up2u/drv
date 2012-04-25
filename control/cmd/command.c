@@ -22,15 +22,21 @@ int parse_command(int argc, char **argv);
 typedef struct
 {
     const char *name;
-    void (*func_arg)(const char *);
-//    int flags;
+    int flags;
+#define HAS_ARG    0x0001
+#define OPT_INT    0x0002
+
+    union{
+        void (*func_arg)(const char *);
+        int *int_arg;
+    }u;
     char *help;
     char *argname;
 }optiondef;
 
 static const optiondef options[] = {
-    {"f", do_script, "input script file", "filename"},
-    {"n", do_node_num, "node num", "num 2-20"} // node num ??
+    {"f", HAS_ARG, {(void *)do_script}, "input script file", "filename"},
+    {"n", OPT_INT, {(void *)&NNODE}, "node num", "num 2-20"} // node num ??
 };
 
 // find_option
@@ -211,9 +217,13 @@ int parse_command(int argc, char **argv)
         if(opt[0] == '-' && opt[1] != '\n'){
             opt++;
             po = find_option(options, opt);
-           //   if(!strcmp(po->name, "f")){ // run from script
-                po->func_arg(argv[optindex]);
-           //}
+            if(po->flags & HAS_ARG){ // function
+                po->u.func_arg(argv[optindex]);
+            }else if(po->flags & OPT_INT){ // int arg
+                *(po->u.int_arg) = strtol(argv[optindex], NULL, 10);
+                printf("now NNODE = %d\n", NNODE);
+            }
+            // get other command from command line.
         }
     }
     return 1;
