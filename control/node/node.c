@@ -21,15 +21,16 @@ void *data_in_thread(void *node)
 {
     static char msg[MAX_PIPE_SIZE];
     node_t  *pnode = (node_t *)node;
+    int read_num = 0;
 
-    while(1){
-        if(read(pnode->data_in.pipe, msg, 5) == -1){
+//    while(1){
+    if((read_num = read(pnode->data_in.pipe, msg, 5)) == -1){
             MYPRINT("data_in_thread");
-
-        }
-        // drv related, recive data from simulated drv
-        printf("the msg recived from data_in_thread is %s\n", msg);
     }
+        // drv related, recive data from simulated drv
+    printf("read num is %d\n", read_num);
+    printf("the msg recived from data_in_thread is %c\n", msg[0]);
+//    }
 }
 
 //void *cmd_in_thread(void *node)
@@ -94,26 +95,15 @@ int init_node(node_t *node,u32 index, u32 pid)
 //        return -1;
 //    }
 
-//    if((node->data_in.pipe = open(node->data_in.name, O_RDONLY)) == -1) {
-
-    node->data_in.pipe = open(node->data_in.name, O_RDONLY);
+    if((node->data_in.pipe = open(node->data_in.name, O_RDONLY)) == -1) {
         MYPRINT("open 3");
-//        return -1;
-//    }
-    static char msg[MAX_PIPE_SIZE];
-    printf("the node->data_in.name = %s\n", node->data_in.name);
-//    while(1){
-        if(read(node->data_in.pipe, msg, 5) == -1){
-            MYPRINT("data_in_thread");
-        }
-        // drv related, recive data from simulated drv
-        printf("the msg recived from data_in_thread is %s\n", msg);
-//    }
+        return -1;
+    }
 
-//    if(pthread_create(node->data_in.thread, NULL, data_in_thread, (void *)node) != 0){
-//        MYPRINT("data in thread");
-//    }
-//    if(pthread_create(node->cmd_in.thread, NULL, cmd_in_thread, (void *)node) != 0){
+    if(pthread_create(&(node->data_in.thread), NULL, data_in_thread, (void *)node) != 0){
+        MYPRINT("data in thread");
+    }
+//    if(pthread_create(&(node->cmd_in.thread), NULL, cmd_in_thread, (void *)node) != 0){
 //        MYPRINT("cmd in thread");
 //    }
     return 1;
