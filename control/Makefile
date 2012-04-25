@@ -10,7 +10,7 @@ LD := gcc
 
 include ${srcs:%.c=%.d}
 
-DIRS := cmd node .
+DIRS := sim cmd node .
 SRCS := $(foreach subdir,${DIRS},$(wildcard ${subdir}/*.c))
 OBJS := $(SRCS:.c=.o)
 

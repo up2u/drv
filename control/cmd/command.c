@@ -158,7 +158,7 @@ static int do_add(char *string)
 //    default:
         MYPRINT("parent process");
         printf("child pid = %d\n", pid);
-        init_node(&nd, id, pid);
+        init_sim_node(&nd, id, pid);
 //    }
 }
 
