@@ -4,7 +4,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <pthread.h>
 #include "command.h"
 #include "defines.h"
 #include "node.h"
@@ -142,25 +141,25 @@ static int do_add(char *string)
     }
 
     memset(&nd, '\0', sizeof(nd));
-    pid = fork();
-
-    switch(pid){
-    case -1:
-        MYPRINT("fork error");
-        break;
-    case 0:
-        MYPRINT("child process");
-        elf_file = strtok(NULL, " ");
-        if(elf_file){
-            printf("the elf_file is %s\n", elf_file);
-            system(elf_file); // node execute elf file
-        }
-        break;
-    default:
+//    pid = fork();
+//
+//    switch(pid){
+//    case -1:
+//        MYPRINT("fork error");
+//        break;
+//    case 0:
+//        MYPRINT("child process");
+//        elf_file = strtok(NULL, " ");
+//        if(elf_file){
+//            printf("the elf_file is %s\n", elf_file);
+//            system(elf_file); // node execute elf file
+//        }
+//        break;
+//    default:
         MYPRINT("parent process");
         printf("child pid = %d\n", pid);
         init_node(&nd, id, pid);
-    }
+//    }
 }
 
 static int parse_option(int argc, char **argv)

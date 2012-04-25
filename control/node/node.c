@@ -46,32 +46,57 @@ void *cmd_in_thread(void *node)
 // give him some name
 //------------------------------------------------------
 int init_node(node_t *node,u32 index, u32 pid)
-{
+{ // fix me mknod and mkfifo
+  // can't use /tmp/fifo/pp.. because can't mkdir. fifo
+  // tempolary use /tmp/pp..
+  // and must remove the exist fifo in /tmp/pp..
+
     node->index = index;
     node->pid = pid;
-    sprintf(node->cmd_in.name, "/tmp/fifo/pp_cmd_in_%d", index);
-    sprintf(node->cmd_out.name, "/tmp/fifo/pp_cmd_out_%d", index);
-    sprintf(node->data_in.name, "/tmp/fifo/pp_data_in_%d", index);
-    sprintf(node->data_out.name, "/tmp/fifo/pp_data_out_%d", index);
+    sprintf(node->cmd_in.name, "/tmp/pp_cmd_in_%d", index);
+
+    printf("the node->cmd_in.name = %s\n", node->cmd_in.name);
+
+    if(mknod(node->cmd_in.name, S_IFIFO | 0666, 0) < 0){
+        MYPRINT("mknod 1");
+        return -1;
+    }
+    sprintf(node->cmd_out.name, "/tmp/pp_cmd_out_%d", index);
+    if(mknod(node->cmd_out.name, S_IFIFO | 0666, 0) < 0){
+        MYPRINT("mknod 2");
+        return -1;
+    }
+    sprintf(node->data_in.name, "/tmp/pp_data_in_%d", index);
+    if(mknod(node->data_in.name, S_IFIFO | 0666, 0) < 0){
+        MYPRINT("mknod 3");
+        return -1;
+    }
+    sprintf(node->data_out.name, "/tmp/pp_data_out_%d", index);
+    if(mknod(node->data_out.name, S_IFIFO | 0666, 0) < 0){
+        MYPRINT("mknod 4");
+        return -1;
+    }
+
+
     if((node->cmd_in.pipe = open(node->cmd_in.name, O_RDONLY)) == -1) {
-        MYPRINT("open");
+        MYPRINT("open 1");
         return -1;
     }
     if((node->cmd_out.pipe = open(node->cmd_out.name, O_WRONLY)) == -1) {
-        MYPRINT("open");
+        MYPRINT("open 2");
         return -1;
     }
     if((node->data_in.pipe = open(node->data_in.name, O_RDONLY)) == -1) {
-        MYPRINT("open");
+        MYPRINT("open 3");
         return -1;
     }
     if((node->data_out.pipe = open(node->cmd_in.name, O_WRONLY)) == -1) {
-        MYPRINT("open");
+        MYPRINT("open 4");
         return -1;
     }
-    if(pthread_create(node->data_in.thread, NULL, data_in_thread, (void *)node) != 0){
-        MYPRINT("data in thread");
-    }
+//    if(pthread_create(node->data_in.thread, NULL, data_in_thread, (void *)node) != 0){
+//        MYPRINT("data in thread");
+//    }
 //    if(pthread_create(node->cmd_in.thread, NULL, cmd_in_thread, (void *)node) != 0){
 //        MYPRINT("cmd in thread");
 //    }
