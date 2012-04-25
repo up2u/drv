@@ -31,39 +31,6 @@ static struct cmd cmd_tbl[] =
 
 int NNODE = 0;
 
-void cli()
-{
-    char msg[MAX_ARG_BUF];
-    char *msg_ptr = NULL;
-
-    while(1){
-        printf("sim >> ");
-        fflush(stdout);
-        fgets(msg, sizeof(msg), stdin);
-        if((msg_ptr = strchr(msg, '\n')) != NULL){
-            *msg_ptr = '\0';
-        }
-        if(strcmp(msg, "\0")){ // an error when use '\0' ??
-            parse_command(msg);
-        }
-    }
-}
-
-void parse_command(char *string)
-{
-    char *cmd;
-    int i;
-
-    cmd = strtok(string, " ");
-    for(i=0; i<COMMAND_TABLE_SIZE; i++){
-        if(!strcmp(cmd_tbl[i].name, cmd)){
-            //find cmd
-            cmd_tbl[i].handler(string + strlen(cmd) + 1);
-        }
-    }
-}
-
-
 
 typedef struct
 {
@@ -257,8 +224,38 @@ int parse_option(int argc, char **argv)
             // get other command from command line.
         }
     }
+}
 
+void cli()
+{
+    char msg[MAX_ARG_BUF];
+    char *msg_ptr = NULL;
 
+    while(1){
+        printf("sim >> ");
+        fflush(stdout);
+        fgets(msg, sizeof(msg), stdin);
+        if((msg_ptr = strchr(msg, '\n')) != NULL){
+            *msg_ptr = '\0';
+        }
+        if(strcmp(msg, "\0")){ // an error when use '\0' ??
+            parse_command(msg);
+        }
+    }
+}
+
+void parse_command(char *string)
+{
+    char *cmd;
+    int i;
+
+    cmd = strtok(string, " ");
+    for(i=0; i<COMMAND_TABLE_SIZE; i++){
+        if(!strcmp(cmd_tbl[i].name, cmd)){
+            //find cmd
+            cmd_tbl[i].handler(string + strlen(cmd) + 1);
+        }
+    }
 }
 
 void parse(int argc, char **argv)
