@@ -4,7 +4,7 @@
 #include <pthread.h>
 #include "types.h"
 
-#define MAX_PIPE_NAME 20
+#define MAX_PIPE_NAME 128
 
 typedef struct pipe
 {

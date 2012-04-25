@@ -24,6 +24,7 @@ void *sim_data_thread(void *node)
     int read_num = 0;
 
     while(1){
+        printf("pnode->sim_data.name = %s\n", pnode->sim_data.name);
         if((read_num = read(pnode->sim_data.pipe, msg, MAX_PIPE_SIZE)) == -1){
             MYPRINT("sim_data_thread");
         }
@@ -72,8 +73,9 @@ int sim_mgr_node(node_t *node,u32 index, u32 pid)
 //        MYPRINT("sim_cmd");
 //    }
 
-
+    printf("index=%d\n", index);
     sprintf(node->sim_data.name, "/tmp/pp_data_in_%d", index);
+    printf("name: %s\n",node->sim_data.name);
     if(mknod(node->sim_data.name, S_IFIFO | 0666, 0) < 0){
         MYPRINT("mknod sim_data");
         return -1;
@@ -82,21 +84,8 @@ int sim_mgr_node(node_t *node,u32 index, u32 pid)
         MYPRINT("open sim_data");
         return -1;
     }
-//    if(pthread_create(&(node->sim_data.thread), NULL, sim_data_thread, (void *)node) != 0){
-//        MYPRINT("pthread_create");
-//    }
-
-    static char msg[MAX_PIPE_SIZE];
-    node_t  *pnode = (node_t *)node;
-    int read_num = 0;
-
-    while(1){
-        if((read_num = read(pnode->sim_data.pipe, msg, MAX_PIPE_SIZE)) == -1){
-            MYPRINT("sim_data_thread");
-        }
-        sleep(5);
-        printf("read_num = %d\n", read_num);
-        printf("msg recived = %s\n", msg);
+    if(pthread_create(&(node->sim_data.thread), NULL, sim_data_thread, (void *)node) != 0){
+        MYPRINT("pthread_create");
     }
 
     return 1;
