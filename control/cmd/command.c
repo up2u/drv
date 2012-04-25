@@ -14,6 +14,9 @@ static int do_echo(char *string); // prototype
 static int do_list(char *string);
 static int do_add(char *string);
 void do_script(char *string);
+void do_node_num(char *string);
+int NNODE = 0;
+
 
 int parse_command(int argc, char **argv);
 typedef struct
@@ -21,14 +24,13 @@ typedef struct
     const char *name;
     void (*func_arg)(const char *);
 //    int flags;
-
-    // const char *help;
-    // const char *argname;
+    char *help;
+    char *argname;
 }optiondef;
 
 static const optiondef options[] = {
-    {"f", (void *)do_script},
-    {"n", NULL} // node num ??
+    {"f", do_script, "input script file", "filename"},
+    {"n", do_node_num, "node num", "num 2-20"} // node num ??
 };
 
 // find_option
@@ -47,7 +49,13 @@ static const optiondef * find_option(const optiondef *po, const char *name)
 // script
 void do_script(char *string)
 {
-    printf("the command is do_script\n");
+    printf("the is option for run script\n");
+}
+// do_node_num
+void do_node_num(char *string)
+{
+    NNODE = strtol(string, NULL, 10);
+    printf("this is option for node num \n");
 }
 
 //------------------------------------------------------
@@ -203,7 +211,9 @@ int parse_command(int argc, char **argv)
         if(opt[0] == '-' && opt[1] != '\n'){
             opt++;
             po = find_option(options, opt);
-            po->func_arg(argv[optindex+1]);
+           //   if(!strcmp(po->name, "f")){ // run from script
+                po->func_arg(argv[optindex]);
+           //}
         }
     }
     return 1;
