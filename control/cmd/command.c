@@ -13,8 +13,42 @@
 static int do_echo(char *string); // prototype
 static int do_list(char *string);
 static int do_add(char *string);
+void do_script(char *string);
 
-int parse_command(char *string);
+int parse_command(int argc, char **argv);
+typedef struct
+{
+    const char *name;
+    void (*func_arg)(const char *);
+//    int flags;
+
+    // const char *help;
+    // const char *argname;
+}optiondef;
+
+static const optiondef options[] = {
+    {"f", (void *)do_script},
+    {"n", NULL} // node num ??
+};
+
+// find_option
+
+static const optiondef * find_option(const optiondef *po, const char *name)
+{
+    while(po->name != NULL){
+        if(!strcmp(po->name, name))
+            break;
+        po++;
+    }
+    return po;
+}
+
+
+// script
+void do_script(char *string)
+{
+    printf("the command is do_script\n");
+}
 
 //------------------------------------------------------
 // init the node struct
@@ -136,28 +170,41 @@ static int do_add(char *string)
     }
 }
 
-int parse_command(char *string)
+int parse_command(int argc, char **argv)
 {
-    int i;
-    char *cmd = strtok(string, " ");
+//    int i;
+//    char *cmd = strtok(string, " ");
+//
+//    for(i=0; i<COMMAND_TABLE_SIZE; i++){
+//        if(strcmp(cmd, cmd_tbl[i].name) == 0){
+//            printf("the command is %s\n", cmd_tbl[i].name);
+//            MYPRINT("run handler");
+//            cmd_tbl[i].handler(cmd + strlen(cmd) + 1);
+//            return 1;
+//        }
+//    }
+//    if(i == COMMAND_TABLE_SIZE){
+//        printf("-----------NOTICE begin------------\n");
+//        putchar('\n');
+//        printf("bad command or not implemented yes\n");
+//        putchar('\n');
+//        printf("-----------NOTICE end--------------\n");
+//        MYPRINT("Test MYPRINT");
+//        return 0;
+//    }
+//
+    int optindex = 1; // 1
+    const char *opt;
+    int handleoption = 1; // !
+    const optiondef *po;
 
-    for(i=0; i<COMMAND_TABLE_SIZE; i++){
-        if(strcmp(cmd, cmd_tbl[i].name) == 0){
-            printf("the command is %s\n", cmd_tbl[i].name);
-            MYPRINT("run handler");
-            cmd_tbl[i].handler(cmd + strlen(cmd) + 1);
-            return 1;
+    while(optindex < argc){
+        opt = argv[optindex++];
+        if(opt[0] == '-' && opt[1] != '\n'){
+            opt++;
+            po = find_option(options, opt);
+            po->func_arg(argv[optindex+1]);
         }
     }
-    if(i == COMMAND_TABLE_SIZE){
-        printf("-----------NOTICE begin------------\n");
-        putchar('\n');
-        printf("bad command or not implemented yes\n");
-        putchar('\n');
-        printf("-----------NOTICE end--------------\n");
-        MYPRINT("Test MYPRINT");
-        return 0;
-    }
-
     return 1;
 }

@@ -1,7 +1,7 @@
 #ifndef _COMMAND_H_
 #define _COMMAND_H_
 
-int parse_command(char *string);
+int parse_command(int argc, char **argv);
 
 #define COMMAND_TABLE_SIZE (sizeof(cmd_tbl)/sizeof(struct cmd))
 

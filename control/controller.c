@@ -21,14 +21,14 @@ int main(int argc, char *argv[])
         usage();
         return -1;
     }
-    for(i=0; i<argc-1; i++){
-        strcpy(p_buf, argv[i+1]);
-        p_buf = p_buf + strlen(p_buf) + 1;
-        p_buf[-1] = ' ';
-    }
+//    for(i=0; i<argc-1; i++){
+//        strcpy(p_buf, argv[i+1]);
+//        p_buf = p_buf + strlen(p_buf) + 1;
+//        p_buf[-1] = ' ';
+//    }
 //    p_buf[-1] = '\n';
 
-    parse_command(arg_buf);
+    parse_command(argc, argv);
 
     return 0;
 }
