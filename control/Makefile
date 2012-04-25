@@ -2,7 +2,7 @@
 RM := rm -f
 INCPATH := -I./defines/ -I./cmd/ -I./node/ -I./types/
 CFLAGS := -c -g3 ${INCPATH}
-LDFLAGS := -lc
+LDFLAGS := -lc -lpthread
 
 CC := gcc
 #LD := ld

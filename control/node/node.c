@@ -1,9 +1,45 @@
 #include <stdio.h>
+//for open()
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+// pthread
+#include <pthread.h>
+
 #include "node.h"
 #include "defines.h"
+
+//void *(*start_routine)(void*)
+void *data_in_thread(void *);
+void *cmd_in_thread(void *);
+
+// fix me
+#define MAX_PIPE_SIZE 128
+
+void *data_in_thread(void *node)
+{
+    static char msg[MAX_PIPE_SIZE];
+    node_t  *pnode = (node_t *)node;
+
+    while(1){
+        if(read(pnode->data_in.pipe, msg, MAX_PIPE_SIZE) == -1){
+            MYPRINT("data_in_thread");
+            // drv related
+            printf("the msg recived from data_in_thread is %s\n", msg);
+        }
+    }
+}
+
+void *cmd_in_thread(void *node)
+{
+    node_t *pnode = (node_t *)node;
+
+    while(1){
+//        if(read(pnode->cmd_in.pipe, ))
+        ;
+    }
+}
+
 
 //------------------------------------------------------
 // init the node struct
@@ -33,10 +69,10 @@ int init_node(node_t *node,u32 index, u32 pid)
         MYPRINT("open");
         return -1;
     }
-//    if(pthead_create(node->data_in.pthread, NULL, data_in_thread, NULL) != 0){
-//        MYPRINT("data in thread");
-//    }
-//    if(pthead_create(node->cmd_in.pthread, NULL, cmd_in_thread, NULL) != 0){
+    if(pthread_create(node->data_in.thread, NULL, data_in_thread, (void *)node) != 0){
+        MYPRINT("data in thread");
+    }
+//    if(pthread_create(node->cmd_in.thread, NULL, cmd_in_thread, (void *)node) != 0){
 //        MYPRINT("cmd in thread");
 //    }
     return 1;
