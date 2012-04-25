@@ -10,17 +10,19 @@
 #include "node.h"
 
 #define MAX_ARG_BUF 512
+int NNODE = 0;
 
 static int do_echo(char *string); // prototype
 static int do_list(char *string);
 static int do_add(char *string);
-void do_script(char *string);
-void do_node_num(char *string);
+static void do_script(char *string);
+static void do_node_num(char *string);
+static int parse_option(int argc, char **argv);
+static void parse_command(char *string);
+static void cli(void);
 void parse(int argc, char **argv);
-int parse_option(int argc, char **argv);
-void parse_command(char *string);
-void cli(void);
 
+// commmand table
 static struct cmd cmd_tbl[] =
 {
     {"echo", do_echo},  // ,
@@ -28,10 +30,7 @@ static struct cmd cmd_tbl[] =
     {"add",  do_add}
 };
 
-
-int NNODE = 0;
-
-
+// struct of options
 typedef struct
 {
     const char *name;
@@ -47,13 +46,16 @@ typedef struct
     char *argname;
 }optiondef;
 
+// option tables
 static const optiondef options[] = {
     {"f", HAS_ARG, {(void *)do_script}, "input script file", "filename"},
     {"n", OPT_INT, {(void *)&NNODE}, "node num", "num 2-20"} // node num ??
 };
 
-// find_option
-
+//------------------------------------------------------
+// find option from option tables
+//
+//------------------------------------------------------
 static const optiondef * find_option(const optiondef *po, const char *name)
 {
     while(po->name != NULL){
@@ -64,14 +66,20 @@ static const optiondef * find_option(const optiondef *po, const char *name)
     return po;
 }
 
-
-// script
-void do_script(char *string)
+//------------------------------------------------------
+// do command that read from script
+//
+//------------------------------------------------------
+static void do_script(char *string)
 {
     printf("the is option for run script\n");
 }
-// do_node_num
-void do_node_num(char *string)
+
+//------------------------------------------------------
+// change the node num
+//
+//------------------------------------------------------
+static void do_node_num(char *string)
 {
     NNODE = strtol(string, NULL, 10);
     printf("this is option for node num \n");
@@ -81,7 +89,6 @@ void do_node_num(char *string)
 // init the node struct
 // give him some name
 //------------------------------------------------------
-
 static int init_pipe(node_t *node,u32 index, u32 pid)
 {
     node->index = index;
@@ -108,12 +115,6 @@ static int init_pipe(node_t *node,u32 index, u32 pid)
     }
     return 1;
 }
-
-//======================================================
-//
-//
-//======================================================
-
 
 //------------------------------------------------------
 //
@@ -192,7 +193,7 @@ static int do_add(char *string)
     }
 }
 
-int parse_option(int argc, char **argv)
+static int parse_option(int argc, char **argv)
 {
 //    if(i == COMMAND_TABLE_SIZE){
 //        printf("-----------NOTICE begin------------\n");
@@ -226,7 +227,7 @@ int parse_option(int argc, char **argv)
     }
 }
 
-void cli()
+static void cli()
 {
     char msg[MAX_ARG_BUF];
     char *msg_ptr = NULL;
@@ -244,7 +245,7 @@ void cli()
     }
 }
 
-void parse_command(char *string)
+static void parse_command(char *string)
 {
     char *cmd;
     int i;
