@@ -2,7 +2,7 @@
 #define _COMMAND_H_
 
 
-int parse_option(int argc, char **argv);
+void parse(int argc, char **argv);
 
 #define COMMAND_TABLE_SIZE (sizeof(cmd_tbl)/sizeof(struct cmd))
 

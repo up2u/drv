@@ -16,6 +16,8 @@ static int do_list(char *string);
 static int do_add(char *string);
 void do_script(char *string);
 void do_node_num(char *string);
+void parse(int argc, char **argv);
+int parse_option(int argc, char **argv);
 void parse_command(char *string);
 void cli(void);
 
@@ -62,7 +64,7 @@ void parse_command(char *string)
 }
 
 
-int parse_option(int argc, char **argv);
+
 typedef struct
 {
     const char *name;
@@ -225,17 +227,6 @@ static int do_add(char *string)
 
 int parse_option(int argc, char **argv)
 {
-//    int i;
-//    char *cmd = strtok(string, " ");
-//
-//    for(i=0; i<COMMAND_TABLE_SIZE; i++){
-//        if(strcmp(cmd, cmd_tbl[i].name) == 0){
-//            printf("the command is %s\n", cmd_tbl[i].name);
-//            MYPRINT("run handler");
-//            cmd_tbl[i].handler(cmd + strlen(cmd) + 1);
-//            return 1;
-//        }
-//    }
 //    if(i == COMMAND_TABLE_SIZE){
 //        printf("-----------NOTICE begin------------\n");
 //        putchar('\n');
@@ -246,6 +237,7 @@ int parse_option(int argc, char **argv)
 //        return 0;
 //    }
 //
+
     int optindex = 1; // 1
     const char *opt;
     int handleoption = 1; // !
@@ -265,6 +257,13 @@ int parse_option(int argc, char **argv)
             // get other command from command line.
         }
     }
+
+
+}
+
+void parse(int argc, char **argv)
+{
+
+    parse_option(argc, argv);
     cli();
-    return 1;
 }
