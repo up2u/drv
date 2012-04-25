@@ -18,19 +18,18 @@ void *cmd_in_thread(void *);
 #define MAX_PIPE_SIZE 128
 
 void *data_in_thread(void *node)
-{
+{// data from node to simulator
     static char msg[MAX_PIPE_SIZE];
     node_t  *pnode = (node_t *)node;
     int read_num = 0;
 
-//    while(1){
-    if((read_num = read(pnode->data_in.pipe, msg, 5)) == -1){
+    while(1){
+        if((read_num = read(pnode->data_in.pipe, msg, MAX_PIPE_SIZE)) == -1){
             MYPRINT("data_in_thread");
+        }
+        usleep(5);
+        printf("the msg recived from data_in_thread is %c\n", msg[0]);
     }
-        // drv related, recive data from simulated drv
-    printf("read num is %d\n", read_num);
-    printf("the msg recived from data_in_thread is %c\n", msg[0]);
-//    }
 }
 
 //void *cmd_in_thread(void *node)
@@ -57,44 +56,23 @@ int init_node(node_t *node,u32 index, u32 pid)
     node->index = index;
     node->pid = pid;
 
-    sprintf(node->cmd_in.name, "/tmp/pp_cmd_in_%d", index);
-//
+//    sprintf(node->cmd_in.name, "/tmp/pp_cmd_in_%d", index);
 //    printf("the node->cmd_in.name = %s\n", node->cmd_in.name);
 //    if(mknod(node->cmd_in.name, S_IFIFO | 0666, 0) < 0){
 //        MYPRINT("mknod 1");
 //        return -1;
 //    }
-//    sprintf(node->cmd_out.name, "/tmp/pp_cmd_out_%d", index);
-//    if(mknod(node->cmd_out.name, S_IFIFO | 0666, 0) < 0){
-//        MYPRINT("mknod 2");
-//        return -1;
-//    }
-//    sprintf(node->data_out.name, "/tmp/pp_data_out_%d", index);
-//    if(mknod(node->data_out.name, S_IFIFO | 0666, 0) < 0){
-//        MYPRINT("mknod 4");
-//        return -1;
-//    }
 //
+//    if((node->cmd_in.pipe = open(node->cmd_in.name, O_RDONLY)) == -1) {
+//        MYPRINT("open 1");
+//        return -1;
+//    }
+
     sprintf(node->data_in.name, "/tmp/pp_data_in_%d", index);
     if(mknod(node->data_in.name, S_IFIFO | 0666, 0) < 0){
         MYPRINT("mknod 3");
         return -1;
     }
-
-
-//    if((node->cmd_in.pipe = open(node->cmd_in.name, O_RDONLY)) == -1) {
-//        MYPRINT("open 1");
-//        return -1;
-//    }
-//    if((node->cmd_out.pipe = open(node->cmd_out.name, O_WRONLY)) == -1) {
-//        MYPRINT("open 2");
-//        return -1;
-//    }
-//    if((node->data_out.pipe = open(node->cmd_in.name, O_WRONLY)) == -1) {
-//        MYPRINT("open 4");
-//        return -1;
-//    }
-
     if((node->data_in.pipe = open(node->data_in.name, O_RDONLY)) == -1) {
         MYPRINT("open 3");
         return -1;
