@@ -18,10 +18,10 @@ typedef struct node
 {
     u32 index;
     u32 pid;
-    pipe_t cmd_in;
-    pipe_t cmd_out;
-    pipe_t data_in;
-    pipe_t data_out;
+    pipe_t sim_cmd;
+    pipe_t sim_data;
+    pipe_t node_cmd;
+    pipe_t node_data;
 
     //other
 }node_t;
