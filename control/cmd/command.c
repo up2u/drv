@@ -18,7 +18,7 @@ void do_node_num(char *string);
 int NNODE = 0;
 
 
-int parse_command(int argc, char **argv);
+int parse_option(int argc, char **argv);
 typedef struct
 {
     const char *name;
@@ -184,7 +184,7 @@ static int do_add(char *string)
     }
 }
 
-int parse_command(int argc, char **argv)
+int parse_option(int argc, char **argv)
 {
 //    int i;
 //    char *cmd = strtok(string, " ");

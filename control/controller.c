@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 //    }
 //    p_buf[-1] = '\n';
 
-    parse_command(argc, argv);
+    parse_option(argc, argv);
 
     return 0;
 }
