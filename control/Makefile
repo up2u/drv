@@ -1,4 +1,3 @@
-
 #global defines
 RM := rm -f
 INCPATH := -I./defines/ -I./cmd/ -I./node/ -I./types/
@@ -11,9 +10,9 @@ LD := gcc
 
 include ${srcs:%.c=%.d}
 
-dirs := cmd
-srcs := $(wildcard ${dirs}/*.c *.c)
-OBJS := $(srcs:.c=.o)
+DIRS := cmd node .
+SRCS := $(foreach subdir,${DIRS},$(wildcard ${subdir}/*.c))
+OBJS := $(SRCS:.c=.o)
 
 all: test.elf
 

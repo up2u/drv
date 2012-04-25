@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-
+#include <pthread.h>
 #include "command.h"
 #include "defines.h"
 #include "node.h"
@@ -85,36 +85,6 @@ static void do_node_num(char *string)
     printf("this is option for node num \n");
 }
 
-//------------------------------------------------------
-// init the node struct
-// give him some name
-//------------------------------------------------------
-static int init_pipe(node_t *node,u32 index, u32 pid)
-{
-    node->index = index;
-    node->pid = pid;
-    sprintf(node->cmd_in.name, "/tmp/fifo/pp_cmd_in_%d", index);
-    sprintf(node->cmd_out.name, "/tmp/fifo/pp_cmd_out_%d", index);
-    sprintf(node->data_in.name, "/tmp/fifo/pp_data_in_%d", index);
-    sprintf(node->data_out.name, "/tmp/fifo/pp_data_out_%d", index);
-    if((node->cmd_in.pipe = open(node->cmd_in.name, O_RDONLY)) == -1) {
-        MYPRINT("open");
-        return -1;
-    }
-    if((node->cmd_out.pipe = open(node->cmd_out.name, O_WRONLY)) == -1) {
-        MYPRINT("open");
-        return -1;
-    }
-    if((node->data_in.pipe = open(node->data_in.name, O_RDONLY)) == -1) {
-        MYPRINT("open");
-        return -1;
-    }
-    if((node->data_out.pipe = open(node->cmd_in.name, O_WRONLY)) == -1) {
-        MYPRINT("open");
-        return -1;
-    }
-    return 1;
-}
 
 //------------------------------------------------------
 //
@@ -189,7 +159,7 @@ static int do_add(char *string)
     default:
         MYPRINT("parent process");
         printf("child pid = %d\n", pid);
-        init_pipe(&nd, id, pid);
+        init_node(&nd, id, pid);
     }
 }
 
