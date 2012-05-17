@@ -1,11 +1,11 @@
 #include <stdio.h>
-#include <stdbool.h>
+//#include <stdbool.h>
 
-//typedef enum
-//{
-//    true=1,
-//    false=0
-//}bool;
+typedef enum level
+{
+    true=1,
+    false=0
+}bool;
 
 int main(void)
 {
