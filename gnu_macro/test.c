@@ -1,9 +1,10 @@
 #include <stdio.h>
+#include "macro.h"
 
 int main(void)
 {
     printf("start\n");
-    pf();
+    PF();
     printf("end\n");
 
     return 0;
